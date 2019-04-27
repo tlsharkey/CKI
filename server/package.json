@@ -1,0 +1,33 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Server for managing tags and experiences",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/tlsharkey/CKI.git"
+  },
+  "keywords": [
+    "Augmented",
+    "Reality",
+    "Mixed",
+    "Reality",
+    "Extended",
+    "Reality",
+    "AR",
+    "MR",
+    "XR",
+    "Map",
+    "Speculative",
+    "Design"
+  ],
+  "author": "Mariel Lyn Velicaria, Akira Mariano, Laini Nguyen, Tommy Sharkey",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tlsharkey/CKI/issues"
+  },
+  "homepage": "https://github.com/tlsharkey/CKI#readme"
+}
