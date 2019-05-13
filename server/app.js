@@ -1,6 +1,8 @@
 // =============================================================================
 // Imports
 const express = require("express");
+const https = require("https");
+const http = require("http");
 const path = require("path");
 const WebSocketServer = require("ws").Server;
 const formidable = require("formidable");
@@ -22,6 +24,10 @@ const TCP_PORT = _config.tcpServer.port;
 const ADDRESS = _config.httpServer.address;
 const EXPERIENCES_PATH = "./uploaded_experiences/";
 const PAGE = "./static/";
+const httpsCerts = {
+    key: fs.readFileSync("config/server.key"),
+    cert: fs.readFileSync("config/server.crt")
+};
 
 
 
@@ -162,6 +168,9 @@ app.use("/html", express.static("static/html"));
 app.use("/robots.txt", express.static("static/robots.txt"));
 app.use("/webfonts", express.static("static/webfonts"));
 app.use("/assets", express.static("static/assets"));
+app.use("/xrextras.js", express.static("xrextras/src/xrextras.js"));
+app.use("/video", express.static("static/assets/video"));
+app.use("/audio", express.static("static/assets/audio"));
 
 app.get("/", function(req, res) {
     res.sendFile(__dirname + "/static/root.html");
@@ -177,6 +186,16 @@ app.get("/create", function(req, res) {
     res.sendFile(__dirname + "/static/createExperience.html");
     console.log("Served create");
 });
+
+app.get("/experience", function(req, res) {
+    res.sendFile(__dirname + "/static/viewer.html");
+    console.log("Served viewer");
+})
+
+app.get("/3", function(req, res) {
+    res.sendFile(__dirname + "/static/three_eg.html");
+    console.log("Server threejs example");
+})
 
 app.post("/upload", function(req, res) {
     console.log("Got Post");
@@ -203,8 +222,9 @@ app.get("/experience/:id(\\d+)", function(req, res, next) {
     res.end();
 });
 
-const httpServer = app.listen(HTTP_PORT, ADDRESS, () => console.log("HTTP Server Hosting On", "http://" + ADDRESS + ":" + HTTP_PORT + "/"));
-
+const httpServer = app.listen(HTTP_PORT, ADDRESS, () => console.log("HTTP Server Hosting On", "https://" + ADDRESS));
+http.createServer(app).listen(80);
+https.createServer(httpsCerts, app).listen(443);
 
 
 // =============================================================================
