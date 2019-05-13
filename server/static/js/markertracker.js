@@ -107,10 +107,10 @@ const imageFramePipelineModule = () => {
         frame.visible = true
 
         //console.debug("Image Position", frame.position);
-        videoTexture.center.copy(detail.position);
-        videoTexture.quaternion.copy(detail.rotation);
-        videoTexture.scale.set(detail.scale, detail.scale, detail.scale);
-        videoTexture.visible = true;
+        // videoTexture.center.copy(detail.position);
+        // videoTexture.quaternion.copy(detail.rotation);
+        // videoTexture.scale.set(detail.scale, detail.scale, detail.scale);
+        // videoTexture.visible = true;
     }
 
     // Hides the image frame when the target is no longer detected.

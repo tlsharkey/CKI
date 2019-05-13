@@ -1,6 +1,7 @@
 // =============================================================================
 // Imports
 const express = require("express");
+const fileUpload = require('express-fileupload');
 const https = require("https");
 const http = require("http");
 const path = require("path");
@@ -171,6 +172,7 @@ app.use("/assets", express.static("static/assets"));
 app.use("/xrextras.js", express.static("xrextras/src/xrextras.js"));
 app.use("/video", express.static("static/assets/video"));
 app.use("/audio", express.static("static/assets/audio"));
+app.use(fileUpload());
 
 app.get("/", function(req, res) {
     res.sendFile(__dirname + "/static/root.html");
@@ -201,15 +203,41 @@ app.post("/upload", function(req, res) {
     console.log("Got Post");
     let form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
-        redirect("/map");
-        let oldpath = files.filetoupload.path;
-        let newpath = __dirname + "/uploaded_experiences" + files.filetoupload.identifier;
-        fs.rename(oldpath, newpath, function(err) {
-            if (err) return console.err("Failed to save", oldpath, "as", newpath, err);
-            console.log("Upload Successful");
-            res.write("Submitted and Saved");
-            res.end();
-        });
+        // Redirect
+        //res.redirect("/map");
+
+        // Get Form Data
+        console.log("Sticker:", fields.sticker);
+        console.log("GPS: ", fields.latitude, "x", fields.longitude);
+        console.log("Recording Name:", (fields.video !== '') ? "video: " + fields.video : "audio: " + fields.audio);
+        console.log("Files: ", files, req.files, "\n\n");
+
+        if (Object.keys(files).length === 0) {
+            return res.status(400).send('No files were uploaded.');
+        }
+
+        // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+        let videoExperience = req.files.video;
+        let audioExperience = req.files.audio;
+        console.log(videoExperience.name, audioExperience.name);
+
+        // Use the mv() method to place the file somewhere on your server
+        if (videoExperience) {
+            videoExperience.mv(__dirname + '/static/assets/video/' + videoExperience.name, function(err) {
+                if (err)
+                    return res.status(500).send(err);
+
+                res.end("Nice Video");
+            });
+        }
+        if (audioExperience) {
+            audioExperience.mv(__dirname + "/static/assets/audio/" + audioExperience.name, function(err) {
+                if (err)
+                    return res.status(500).send(err);
+
+                res.end("Sounds Good");
+            })
+        }
     });
 });
 

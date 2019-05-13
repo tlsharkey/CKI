@@ -8,18 +8,62 @@
         <meta charset="utf-8" />
     </head>
 
+    <script src="js/record.js"></script>
+
     <body>
         <h1>Form for creating an experience</h1>
         <a href="/">Home</a>
         <a href="/map">Map</a>
         <a href="/create">Create Experience</a>
-        <form>
+        <form action="/upload" method="post">
             <h6>put form elements here</h6>
-        </form>
-    </body>
+            <ol>
+                <li>
+                    Scan your path sticker
+                </li>
+                <li>
+                    Begin recording your experience
+                </li>
+                <li>
+                    Press the 'End' button to stop recording
+                </li>
+            </ol>
+            <br />
 
-    <script>
-        // Import code from /js/yourjsfile
-    </script>
+            <h4>Select the Sticker you're placing</h4>
+            <select id="sticker" name="sticker">
+                <option value="1">
+                    sticker 1
+                </option>
+                <option value="2">
+                    sticker 2
+                </option>
+                <option value="3">
+                    sticker 3
+                </option>
+            </select>
+            <br />
+
+            <h4>Get GPS Location of the sticker</h4>
+            <div id="getLocationButton" onclick="getLocation()" style="padding:0.5em; width:10em; background-color:blue; color:white; text-align:center; vertical-align:center; border-radius:1em">
+                <span>Get Location</span>
+            </div>
+            <span>Latitude </span><input id="lat" name="latitude" type="double" />
+            <br />
+            <span>Longitude </span><input id="long" name="longitude" type="double" />
+            <br />
+
+            <h4>Record your experience</h4>
+            <span>Record Video and Audio: </span>
+            <input type="file" name="video" accept="video/*;capture=camcorder">
+            <br />
+            <span>Record Audio: </span>
+            <input type="file" name="audio" accept="audio/*;capture=microphone">
+            <br />
+
+            <input type="submit" />
+        </form>
+
+    </body>
 
 </html>
