@@ -10,26 +10,12 @@
 
     <script src="js/record.js"></script>
 
-    <body>
+    <body onload="init()">
         <h1>Form for creating an experience</h1>
         <a href="/">Home</a>
         <a href="/map">Map</a>
         <a href="/create">Create Experience</a>
-        <form action="/upload" method="post">
-            <h6>put form elements here</h6>
-            <ol>
-                <li>
-                    Scan your path sticker
-                </li>
-                <li>
-                    Begin recording your experience
-                </li>
-                <li>
-                    Press the 'End' button to stop recording
-                </li>
-            </ol>
-            <br />
-
+        <form id="experienceData" style="display:block;" ref="uploadForm" action="/uploadDetails" method="post" target="_blank" onsubmit="cleanUpFirstPost()">
             <h4>Select the Sticker you're placing</h4>
             <select id="sticker" name="sticker">
                 <option value="1">
@@ -53,7 +39,12 @@
             <span>Longitude </span><input id="long" name="longitude" type="double" />
             <br />
 
-            <h4>Record your experience</h4>
+            <input type="submit" />
+        </form>
+
+
+        <form id="experienceRecording" style="display:none;" ref="uploadForm" action="/uploadExperience" method="post" encType="multipart/form-data" target="_self" onsubmit="cleanUpSecondPost()">
+            <h4>Record your experience (pick one - will default to video)</h4>
             <span>Record Video and Audio: </span>
             <input type="file" name="video" accept="video/*;capture=camcorder">
             <br />
@@ -63,6 +54,14 @@
 
             <input type="submit" />
         </form>
+
+
+        <div id="loading">
+            <h1>Please be patient while we upload your experience.</h1>
+            <h6>I don't know why but this process currently takes FOREVER</h6>
+            <br /><br />
+            <img src="assets/exacerbated.png" />
+        </div>
 
     </body>
 

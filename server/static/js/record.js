@@ -45,3 +45,19 @@ function showPosition(position) {
 // Get 'END' event
 
 // Send POST request
+
+// Visuals
+function cleanUpFirstPost(ev) {
+    document.getElementById("experienceData").style.display = "none";
+    document.getElementById("experienceRecording").style.display = "block";
+}
+
+function cleanUpSecondPost(ev) {
+    document.getElementById("experienceRecording").style.display = "none";
+    document.getElementById("loading").style.display = "block";
+}
+
+function init() {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("experienceRecording").style.display = "none";
+}

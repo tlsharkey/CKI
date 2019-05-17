@@ -19,7 +19,7 @@ const app = express();
 // Globals
 var tcpDevices = [];
 var wsDevices = [];
-var wsDeviceIds;
+var wsDeviceIds = 0;
 const HTTP_PORT = _config.httpServer.port;
 const TCP_PORT = _config.tcpServer.port;
 const ADDRESS = _config.httpServer.address;
@@ -29,6 +29,13 @@ const httpsCerts = {
     key: fs.readFileSync("config/server.key"),
     cert: fs.readFileSync("config/server.crt")
 };
+
+var assets = []
+getExperiences();
+var availableStickers = [
+    "broccoli.png", "buddah-fox", "embarassed-fox", "fab-fox", "flower-pentagram",
+    "fox-bark", "fox-hearts", "high-paw", "magic-flower", "magic-heart",
+]
 
 
 
@@ -199,45 +206,57 @@ app.get("/3", function(req, res) {
     console.log("Server threejs example");
 })
 
-app.post("/upload", function(req, res) {
-    console.log("Got Post");
+var lastUploadDetails = null; // TODO: create identifiers to avoid concurrent uploads interfering with eachother
+
+app.post("/uploadDetails", function(req, res) {
+    let form = new formidable.IncomingForm();
+    form.parse(req, function(err, fields, files) {
+        lastUploadDetails = {
+            sticker: fields.sticker,
+            location: {
+                latitude: fields.latitude,
+                longitude: fields.longitude
+            }
+        }
+
+        console.log("Got upload details", lastUploadDetails);
+    });
+});
+
+app.post("/uploadExperience", function(req, res) {
+    console.log("Uploading Experience...");
     let form = new formidable.IncomingForm();
     form.parse(req, function(err, fields, files) {
         // Redirect
         //res.redirect("/map");
 
-        // Get Form Data
-        console.log("Sticker:", fields.sticker);
-        console.log("GPS: ", fields.latitude, "x", fields.longitude);
-        console.log("Recording Name:", (fields.video !== '') ? "video: " + fields.video : "audio: " + fields.audio);
-        console.log("Files: ", files, req.files, "\n\n");
+        let details = lastUploadDetails;
+        console.log("Using", details, "for experience upload");
 
-        if (Object.keys(files).length === 0) {
-            return res.status(400).send('No files were uploaded.');
+        if (Object.keys(req.files).length === 0) {
+            lastUploadDetails = null;
+            res.status(400).send('No files were uploaded.');
+            return;
         }
 
         // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
         let videoExperience = req.files.video;
         let audioExperience = req.files.audio;
-        console.log(videoExperience.name, audioExperience.name);
+        //console.log(videoExperience.name, audioExperience.name);
 
         // Use the mv() method to place the file somewhere on your server
-        if (videoExperience) {
-            videoExperience.mv(__dirname + '/static/assets/video/' + videoExperience.name, function(err) {
-                if (err)
-                    return res.status(500).send(err);
+        let experience;
+        let folder = ('name' in videoExperience) ? "video" : ('name' in audioExperience) ? "audio" : null;
+        if (!folder) return res.status(400).send("Error, didn't get a file");
 
-                res.end("Nice Video");
-            });
-        }
-        if (audioExperience) {
-            audioExperience.mv(__dirname + "/static/assets/audio/" + audioExperience.name, function(err) {
-                if (err)
-                    return res.status(500).send(err);
+        experience = ('name' in videoExperience) ? videoExperience : audioExperience;
 
-                res.end("Sounds Good");
-            })
-        }
+        experience.mv(_dirname + "/static/assets/" + folder + "/" + experience.name, function(err) {
+            if (err) return res.status(500).send(err);
+
+            addExperience(details.sticker, folder + "/" + experience.name);
+            res.end("Thank You");
+        });
     });
 });
 
@@ -252,7 +271,8 @@ app.get("/experience/:id(\\d+)", function(req, res, next) {
 
 const httpServer = app.listen(HTTP_PORT, ADDRESS, () => console.log("HTTP Server Hosting On", "https://" + ADDRESS));
 http.createServer(app).listen(80);
-https.createServer(httpsCerts, app).listen(443);
+var httpsServer = https.createServer(httpsCerts, app)
+httpsServer.listen(443);
 
 
 // =============================================================================
@@ -260,7 +280,8 @@ https.createServer(httpsCerts, app).listen(443);
 // =============================================================================
 
 const wss = new WebSocketServer({
-    server: httpServer
+    server: httpsServer,
+    path: "/cnxshun"
 });
 
 wss.on("connection", function(ws, req) {
@@ -284,8 +305,12 @@ wss.on("connection", function(ws, req) {
 
         if (msg && "type" in msg) {
             switch (msg.type) {
-                case "asdf":
-                    // Do Something
+                case "getExperiences":
+                    console.log("Sending Experiences");
+                    ws.send(JSON.stringify({
+                        type: "experiences",
+                        experiences: assets
+                    }));
                     break;
                 default:
                     console.error("Got Unknown Websocket message type:", msg.type);
@@ -297,7 +322,7 @@ wss.on("connection", function(ws, req) {
     ws.on("close", function() {
         console.log("Websocket", ws.id, "closed");
         disconnectPendingRequests(wsDevices[ws.id], 0); // disconnect pending requests
-        delete clientList[ws.id];
+        delete wsDevices[ws.id];
     });
 })
 
@@ -320,4 +345,40 @@ function disconnectPendingRequests(sock, timeout) {
             sock.requests.splice(i, 1);
         }
     }
+}
+
+function addExperience(target, asset) {
+    let experience = {
+        target: target,
+        asset: asset
+    }
+    assets.push(experience);
+
+    fs.writeFile(__dirname + "/appState.json", JSON.stringify(assets, null, 4), function(err) {
+        if (err) {
+            return console.error("Failed to update application state " + err);
+        }
+
+        console.log("Added Experience", experience);
+    });
+}
+
+function getExperiences() {
+    let filename = __dirname + "/appState.json";
+    fs.stat(filename, function(err, stat) {
+        if (err == null) { // File Exists
+            fs.readFile(filename, 'utf8', function(err, data) {
+                if (err) return console.error("Error Reading", filename);
+
+                let experiences = JSON.parse(data.toString());
+                assets = experiences;
+
+                console.log("Loaded Experiences", assets);
+            });
+        } else if (err.code == 'ENOENT') { // File Doesn't Exist
+            console.error("appState File Didn't exist, but it should have " + err);
+        } else {
+            console.error("error while reading appState file " + err);
+        }
+    });
 }

@@ -1,0 +1,14 @@
+[
+    {
+        "target": "cropped-bluefrog.jpg",
+        "experience": "video/whistle.mp4"
+    },
+    {
+        "target": "model-target.jpg",
+        "experience": "video/jellyfish-video.mp4"
+    },
+    {
+        "target": "path.png",
+        "experience": "video/signs.mp4"
+    }
+]
