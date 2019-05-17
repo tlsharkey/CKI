@@ -27,29 +27,21 @@
         <a-scene id="scene" xrweb xrextras-gesture-detector xrextras-almost-there xrextras-loading xrextras-runtime-error>
 
             <a-assets id="aframeAssets">
-                <!-- Credit to Poly by Google for the model: https://poly.google.com/view/dA5osnS0Rzj
-                <a-asset-item id="jelly-glb" src="assets/jellyfish-model.glb"></a-asset-item>
-                <a-asset-item id="jellymodel" src="assets/jellyfish-model.glb"></a-asset-item> -->
-
                 <img id="pathfrog" src="assets/targets/pathfrog.png" />
-                <img id="path" src="assets/targets/path.png" />
-                <img id="fabfox" src="assets/targets/fab-fox.png" />
+                <img id="fox" src="assets/targets/fab-fox.png" />
 
                 <video id="whistle" autoplay crossorigin="anonymous" loop="true" src="video/whistle.mp4"></video>
-                <video id="signs" autoplay crossorigin="anonymous" loop="true" src="video/signs.mp4"></video>
-                <video id="test" autoplay crossorigin="anonymous" loop="true" src="video/test.mp4"></video>
+                <video id="sample" autoplay crossorigin="anonymous" loop="true" src="video/test.mp4"></video>
             </a-assets>
 
             <a-camera position="0 4 10" raycaster="objects: .cantap" cursor="fuse: false; rayOrigin: mouse;"></a-camera>
             <a-light type="directional" intensity="0.5" position="1 1 1"></a-light>
             <a-light type="ambient" intensity="1"></a-light>
 
-            <a-entity id="jellymodel" position="0 0 0" scale=".95 .95 1" gltf-model="#jellymodel"></a-entity>
-
             <!-- Populate with paths -->
-            <a-entity xrextras-named-image-target="name: path" xrextras-play-video="video: #signs; thumb: #path; canstop: true" geometry="primitive: plane; height: 1; width: 0.79;"></a-entity>
-            <a-entity image-target="name: pathfrog" xrextras-play-video="video: #whistle; thumb: #pathfrog; canstop: true" geometry="primitive: plane; height:3; width:3"></a-entity>
-            <a-entity image-target="name: fab-fox" xrextras-play-video="video: #test; thumb: #fabfox; canstop: true" geometry="primitive: plane; height: 3; width: 3;"></a-entity>
+            <a-entity xrextras-named-image-target="name: fab-fox" xrextras-play-video="video: #sample; thumb: #fox; canstop: true" geometry="primitive: plane; height: 3; width: 3;"></a-entity>
+            <a-entity id="testing" image-target="name: pathfrog" xrextras-play-video="video: #whistle; thumb: #pathfrog; canstop: true" geometry="primitive: plane; height:3; width:3"></a-entity>
+
         </a-scene>
 
     </body>
