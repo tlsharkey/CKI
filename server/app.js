@@ -32,7 +32,7 @@ const httpsCerts = {
 
 var assets = []
 getExperiences();
-var availableStickers = [
+var serverStickers = [
     "broccoli.png", "buddah-fox", "embarassed-fox", "fab-fox", "flower-pentagram",
     "fox-bark", "fox-hearts", "high-paw", "magic-flower", "magic-heart",
 ]

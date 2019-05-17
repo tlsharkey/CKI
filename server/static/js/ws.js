@@ -37,8 +37,10 @@ function loadExperiences() {
         type: "getExperiences"
     }));
 }
+var deb;
 
 function parseExperiences() {
+    return;
     let assets = document.getElementById("aframeAssets");
     let scene = document.getElementById("scene");
 
@@ -53,21 +55,39 @@ function parseExperiences() {
         // Experience
         let content = document.createElement("video");
         content.setAttribute("id", makeGoodName(experience.experience));
-        content.setAttribute("autoplay", ""); //FIXME: set this
+        content.setAttribute("autoplay", "");
         content.setAttribute("crossorigin", "anonymous");
         content.setAttribute("loop", "true");
         content.setAttribute("src", experience.experience);
         // Add to HTML
         assets.appendChild(target);
         assets.appendChild(content);
+        console.debug("Added target", target, "and content", content, "to assets", assets);
 
         //// Create A-Frame Entity for marker
         let entity = document.createElement("a-entity");
-        entity.setAttribute("image-target", "name: " + experience.target);
-        entity.setAttribute("xrextras-play-video", "video: #" + makeGoodName(experience.experience) + "; thumb: #" + makeGoodName(experience.target) + "; canstop: true");
-        entity.setAttribute("geometry", "primitive: plane; height:3; width:3");
+        deb = entity;
+        // entity.setAttribute("image-target", "name: " + makeGoodName(experience.target));
+        // entity.setAttribute("xrextras-play-video", "video: #" + makeGoodName(experience.experience) + "; thumb: #" + makeGoodName(experience.target) + "; canstop: true");
+        // entity.setAttribute("geometry", "primitive: plane; height:3; width:3");
+
+        $(entity)[0].setAttribute('image-target', {
+            name: makeGoodName(experience.target)
+        });
+        $(entity)[0].setAttribute("xrextras-play-video", {
+            video: "#" + makeGoodName(experience.experience),
+            thumb: "#" + makeGoodName(experience.target),
+            canstop: true
+        });
+        $(entity)[0].setAttribute("geometry", {
+            primitive: "plane",
+            height: 3,
+            width: 3
+        });
+
         // Add to HTML
         scene.appendChild(entity);
+        console.debug("Added entity", entity, "to scene", scene);
 
         console.log("Added", experience);
     }
