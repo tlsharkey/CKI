@@ -1,46 +1,34 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>8th Wall Web: babylon.js</title>
+        <style src="css/babylon-3.css"></style>
 
-        <title>8th Wall Web: Flyer</title>
+        <!-- Babylon.js -->
+        <script src="https://preview.babylonjs.com/babylon.js"></script>
+        <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
 
-        <script src="//cdn.8thwall.com/web/aframe/8frame-0.9.0.min.js"></script>
+        <!-- Javascript tweening engine -->
+        <script src="//cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
 
         <!-- XR Extras - provides utilities like load screen, almost there, and error handling.
-         See github.com/8thwall/web/xrextras -->
+    See github.com/8thwall/web/xrextras -->
         <script src="js/xrextras.js"></script>
 
         <!-- 8thWall Web - Replace the app key here with your own app key -->
-        <script defer src="https://apps.8thwall.com/xrweb?appKey=gDG18m9XhFZhXxflr5W3Lc85v7SUPhZ2GHdLiZn1o82l8Xc6ELbcscUD9vZTVcMfj38j8F"></script>
+        <script async src="https://apps.8thwall.com/xrweb?appKey=gDG18m9XhFZhXxflr5W3Lc85v7SUPhZ2GHdLiZn1o82l8Xc6ELbcscUD9vZTVcMfj38j8F"></script>
+
+        <!-- client code -->
+        <script src="js/babylon-index.js"></script>
+        <script src="js/babylon-script.js"></script>
 
     </head>
 
     <body>
-
-        <a-scene xrweb="disableWorldTracking: true" xrextras-gesture-detector xrextras-almost-there xrextras-loading xrextras-runtime-error>
-
-            <a-assets>
-                <!-- Credit to Poly by Google for the model: https://poly.google.com/view/dA5osnS0Rzj
-                <a-asset-item id="jelly-glb" src="assets/jellyfish-model.glb"></a-asset-item> -->
-                <img id="thumb" src="assets/targets/cropped-bluefrog.jpg">
-                <video id="signingVideo" autoplay muted crossorigin="anonymous" loop="true" src="video/signs.mp4"></video>
-            </a-assets>
-
-            <a-camera position="0 4 10" raycaster="objects: .cantap" cursor="fuse: false; rayOrigin: mouse;">
-            </a-camera>
-
-            <a-light type="directional" intensity="0.5" position="1 1 1"></a-light>
-
-            <a-light type="ambient" intensity="1"></a-light>
-
-            <a-entity xrextras-named-image-target="name: cropped-bluefrog" xrextras-play-video="video: #signingVideo; thumb: #thumb; canstop: true" geometry="primitive: plane; height: 1; width: 0.79;">
-            </a-entity>
-
-        </a-scene>
-
+        <canvas id="renderCanvas"></canvas>
     </body>
 
 </html>
