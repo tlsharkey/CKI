@@ -1,14 +1,17 @@
 [
     {
-        "target": "cropped-bluefrog.jpg",
+        "id": "cropped-bluefrog",
+        "thumbnail": "cropped-bluefrog.jpg",
         "experience": "video/whistle.mp4"
     },
     {
-        "target": "model-target.jpg",
-        "experience": "video/jellyfish-video.mp4"
+        "id": "pathfrog",
+        "thumbnail": "pathfrog.png",
+        "experience": "video/signs.mp4"
     },
     {
-        "target": "pathfrog.png",
-        "experience": "video/signs.mp4"
+        "id": "fab-fox",
+        "thumbnail": "fab-fox.png",
+        "experience": "video/test.mp4"
     }
 ]

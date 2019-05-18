@@ -108,25 +108,6 @@ const startScene = () => {
     light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
     light.intensity = 0.7;
 
-    // Our built-in 'sphere' shape.
-    for (let i = 0; i < experiences.length; i++) {
-        experiences[i].model = BABYLON.MeshBuilder.CreatePlane("plane", {
-            width: 1,
-            height: 1,
-            scaling: 1920 / 1080
-        }, scene);
-
-        let mat = new BABYLON.StandardMaterial("mat", scene);
-        mat.diffuseTexture = new BABYLON.VideoTexture("video", ["video/signs.mp4"], scene, true);
-        experiences[i].model.material = mat;
-
-        // experiences[i].model = BABYLON.MeshBuilder.CreateSphere("sphere", {
-        //     diameter: i,
-        //     segments: 32,
-        // }, scene);
-        //experiences[i].model.position.y = i;
-    }
-
     engine.runRenderLoop(() => {
         // Enable TWEEN animations.
         TWEEN.update(performance.now())
@@ -138,9 +119,10 @@ const startScene = () => {
     });
 
     scene.onXrImageUpdatedObservable.add(e => {
-        console.log("Got Image Target", e);
+        //console.log("Got Image Target", e);
         for (let i = 0; i < experiences.length; i++) {
             if (experiences[i].id === e.name) {
+                console.debug("Found match", experiences[i].id, e.name);
                 copyVec(e.position, experiences[i].model.position);
                 //console.log("Rotations", e.rotation, experiences[i].model.rotationQuaternion);
                 copyVec(e.rotation, experiences[i].model.rotationQuaternion);
