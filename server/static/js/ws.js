@@ -2,8 +2,11 @@
 var host = location.origin.replace(/^http/, 'ws');
 host += "/cnxshun";
 var ws = new WebSocket(host);
+var wsConnected = false;
 
 var experiences;
+var pageType = location.href.split("/");
+pageType = pageType[pageType.length - 1];
 
 ws.onconnection = function(event) {
     console.log('connected!');
@@ -20,10 +23,30 @@ ws.onmessage = function(event) {
 
     if (msg && 'type' in msg) {
         switch (msg.type) {
+            case "connected":
+                wsConnected = true;
+                switch (pageType) {
+                    case "map":
+                    case "viewer":
+                        loadExperiences();
+                        break;
+                    default:
+                        console.warn("Not Doing anything when websocket connects for", pageType);
+                }
+                break;
             case "experiences":
                 console.log("Got experiences", msg);
                 experiences = msg.experiences;
-                parseExperiences();
+                switch (pageType) {
+                    case "map":
+                        placePins();
+                        break;
+                    case "viewer":
+                        parseExperiences();
+                        break;
+                    default:
+                        console.warn("Not doing anything with experiences for", pageType);
+                }
                 break;
             default:
                 console.warn("Unknown Message");
@@ -100,4 +123,22 @@ function makeGoodName(name) {
     name = name.split("/").join("-");
     name = name.split(".").join("_");
     return name;
+}
+
+function placePins() {
+    if (mapSetup && wsConnected) {
+        for (let i = 0; i < experiences.length; i++) {
+            let location = new google.maps.LatLng(experiences[i].location.latitude, experiences[i].location.longitude);
+            placeMarker(location, "assets/targets/" + experiences[i].thumbnail, experiences[i].experience);
+        }
+
+
+
+        // let markerCluster = new MarkerClusterer(map, markers, {
+        //     imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+        // });
+
+    } else {
+        console.debug("Map is" + ((mapSetup) ? "" : "n't"), "ready. Websocket is" + ((wsConnected) ? "" : "n't"), "ready.")
+    }
 }

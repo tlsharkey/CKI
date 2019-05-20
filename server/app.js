@@ -198,6 +198,7 @@ app.get("/create", function(req, res) {
 
 app.get("/experience", function(req, res) {
     res.sendFile(__dirname + "/static/viewer.html");
+    //res.sendFile(__dirname + "/static/three_eg.html");
     console.log("Served viewer");
 })
 
@@ -254,7 +255,7 @@ app.post("/uploadExperience", function(req, res) {
         experience.mv(_dirname + "/static/assets/" + folder + "/" + experience.name, function(err) {
             if (err) return res.status(500).send(err);
 
-            addExperience(details.sticker, folder + "/" + experience.name);
+            addExperience(details, folder + "/" + experience.name);
             res.end("Thank You");
         });
     });
@@ -294,6 +295,9 @@ wss.on("connection", function(ws, req) {
     }
 
     console.log("Websocket", ws.id, "connected");
+    ws.send(JSON.stringify({
+        type: "connected"
+    }));
 
     ws.on("message", function(message) {
         var msg;
@@ -349,7 +353,8 @@ function disconnectPendingRequests(sock, timeout) {
 
 function addExperience(target, asset) {
     let experience = {
-        target: target,
+        target: target.sticker,
+        location: target.location,
         asset: asset
     }
     assets.push(experience);
