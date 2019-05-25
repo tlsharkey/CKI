@@ -286,6 +286,7 @@ const wss = new WebSocketServer({
 });
 
 wss.on("connection", function(ws, req) {
+    console.log("Connecting WebSocket");
     ws.id = ++wsDeviceIds;
 
     wsDevices[ws.id] = {
