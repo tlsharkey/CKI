@@ -1,14 +1,57 @@
 <html>
 
     <style src="/css/CKI">
-        /* Import CSS from /css/yourcssfile */
+        .select {
+            width: 90%;
+            padding: 2.5em;
+            background-color: blue;
+            color: white;
+            text-align: center;
+            vertical-align: center;
+            border-radius: 1em;
+        }
+
+        @keyframes expand {
+            from {
+                height: 0;
+            }
+
+            to {
+                height: "";
+            }
+        }
+
+        .option {
+            background-color: blue;
+            color: white;
+            width: 100%;
+            vertical-align: center;
+        }
+
+        .option img {
+            height: 10em;
+        }
+
+        #options {
+            width: 95%;
+            height: 50em;
+            top: calc(+5em);
+            position: absolute;
+            display: none;
+            animation-duration: 3s;
+            animation-name: expand;
+            overflow: scroll;
+            border-radius: 1em;
+        }
     </style>
 
     <head>
         <meta charset="utf-8" />
     </head>
 
+    <script src="js/jquery.min.js"></script>
     <script src="js/record.js"></script>
+    <script src="js/ws.js"></script>
 
     <body onload="init()">
         <h1>Form for creating an experience</h1>
@@ -17,17 +60,14 @@
         <a href="/create">Create Experience</a>
         <form id="experienceData" style="display:block;" ref="uploadForm" action="/uploadDetails" method="post" target="_blank" onsubmit="cleanUpFirstPost()">
             <h4>Select the Sticker you're placing</h4>
-            <select id="sticker" name="sticker">
-                <option value="1">
-                    sticker 1
-                </option>
-                <option value="2">
-                    sticker 2
-                </option>
-                <option value="3">
-                    sticker 3
-                </option>
-            </select>
+            <input type="text" name="sticker" />
+
+            <div id="sticker" class="select">
+                Choose Sticker
+                <div id="options"></div>
+            </div>
+
+
             <br />
 
             <h4>Get GPS Location of the sticker</h4>

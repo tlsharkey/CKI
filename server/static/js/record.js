@@ -60,4 +60,32 @@ function cleanUpSecondPost(ev) {
 function init() {
     document.getElementById("loading").style.display = "none";
     document.getElementById("experienceRecording").style.display = "none";
+
+    document.getElementById("sticker").addEventListener("click", function(ev) {
+        let select = ev.target;
+        let opts = $("#options")[0];
+
+        $(opts).css("top",
+            parseInt($("#sticker").position().top) +
+            parseInt($("#sticker").css("height")) + 20
+        );
+
+        if (opts.style.display === "none" || opts.style.display === "") {
+            opts.style.display = "block";
+
+            // Set options to be clickable
+            $("#options div.option").click(function(ev) {
+                console.log($(ev.target).prop("tagName"));
+                let choice;
+                if ($(ev.target).prop("tagName") === "IMG") {
+                    choice = $(ev.target)[0].src.split("targets/")[1];
+                } else {
+                    choice = $(ev.target)[0].childNodes[0].src.split("targets/")[1];
+                }
+                $("#experienceData input[type=text][name=sticker]").val(choice);
+            });
+        } else {
+            opts.style.display = "none";
+        }
+    });
 }

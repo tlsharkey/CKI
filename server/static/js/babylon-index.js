@@ -1,8 +1,3 @@
-const modelRootURL = 'assets/' // Directory where 3D model lives
-const modelFile = 'tree.glb' // 3D model to spawn at tap
-const startScale = new BABYLON.Vector3(0.01, 0.01, 0.01) // Initial scale value for our model
-const endScale = new BABYLON.Vector3(0.05, 0.05, 0.05) // Ending scale value for our model
-const animationMillis = 750 // Animate over 0.75 seconds
 var actionManager;
 
 let surface, engine, scene, camera
@@ -28,62 +23,6 @@ const initXrScene = ({
     camera.position = new BABYLON.Vector3(0, 3, 5)
 }
 
-const placeObjectTouchHandler = (e) => {
-    // console.log('placeObjectTouchHandler')
-    // Call XrController.recenter() when the canvas is tapped with two fingers. This resets the
-    // AR camera to the position specified by XrController.updateCameraProjectionMatrix() above.
-    if (e.touches.length == 2) {
-        XR.XrController.recenter()
-    }
-
-    if (e.touches.length > 2) {
-        return
-    }
-
-    // If the canvas is tapped with one finger and hits the "surface", spawn an object.
-
-    const pickResult = scene.pick(e.touches[0].clientX, e.touches[0].clientY)
-    if (pickResult.hit && pickResult.pickedMesh == surface) {
-
-        const gltf = BABYLON.SceneLoader.LoadAssetContainer(
-            modelRootURL,
-            modelFile,
-            scene,
-            function(container) { // onSuccess
-                const scale = Object.assign({}, startScale)
-                const yRot = Math.random() * 360
-                for (i = 0; i < container.meshes.length; i++) {
-                    container.meshes[i]._position.x = pickResult.pickedPoint.x
-                    container.meshes[i]._position.z = pickResult.pickedPoint.z
-                    container.meshes[i]._rotation.y = yRot
-                    container.meshes[i]._scaling.x = scale.x
-                    container.meshes[i]._scaling.y = scale.y
-                    container.meshes[i]._scaling.z = scale.z
-                }
-                // Adds all elements to the scene
-                container.addAllToScene()
-
-                new TWEEN.Tween(scale)
-                    .to(endScale, animationMillis)
-                    .easing(TWEEN.Easing.Elastic.Out) // Use an easing function to make the animation smooth.
-                    .onUpdate(() => {
-                        for (i = 0; i < container.meshes.length; i++) {
-                            container.meshes[i]._scaling.x = scale.x
-                            container.meshes[i]._scaling.y = scale.y
-                            container.meshes[i]._scaling.z = scale.z
-                        }
-                    })
-                    .start() // Start the tween immediately.
-            },
-            function(xhr) { //onProgress
-                console.log(`${(xhr.loaded / xhr.total * 100 )}% loaded`)
-            },
-            function(error) { //onError
-                console.log('Error loading model')
-            },
-        )
-    }
-}
 
 const startScene = () => {
     const canvas = document.getElementById('renderCanvas')
@@ -104,7 +43,6 @@ const startScene = () => {
 
     // Connect the camera to the XR engine and show camera feed
     camera.addBehavior(XR.Babylonjs.xrCameraBehavior())
-    //canvas.addEventListener('touchstart', placeObjectTouchHandler, true) // Add touch listener.
 
     light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
     light.intensity = 0.7;
@@ -113,6 +51,7 @@ const startScene = () => {
         // Enable TWEEN animations.
         TWEEN.update(performance.now())
         scene.render()
+        //console.log(camera.position);
     })
 
     window.addEventListener('resize', () => {

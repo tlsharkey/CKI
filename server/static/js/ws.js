@@ -30,6 +30,9 @@ ws.onmessage = function(event) {
                     case "viewer":
                         loadExperiences();
                         break;
+                    case "create":
+                        loadOptions();
+                        break;
                     default:
                         console.warn("Not Doing anything when websocket connects for", pageType);
                 }
@@ -48,6 +51,9 @@ ws.onmessage = function(event) {
                         console.warn("Not doing anything with experiences for", pageType);
                 }
                 break;
+            case "uploadOptions":
+                parseOptions(msg);
+                break;
             default:
                 console.warn("Unknown Message");
         }
@@ -60,7 +66,6 @@ function loadExperiences() {
         type: "getExperiences"
     }));
 }
-var deb;
 
 function parseExperiences() {
     return;
@@ -89,7 +94,6 @@ function parseExperiences() {
 
         //// Create A-Frame Entity for marker
         let entity = document.createElement("a-entity");
-        deb = entity;
         // entity.setAttribute("image-target", "name: " + makeGoodName(experience.target));
         // entity.setAttribute("xrextras-play-video", "video: #" + makeGoodName(experience.experience) + "; thumb: #" + makeGoodName(experience.target) + "; canstop: true");
         // entity.setAttribute("geometry", "primitive: plane; height:3; width:3");
@@ -140,5 +144,28 @@ function placePins() {
 
     } else {
         console.debug("Map is" + ((mapSetup) ? "" : "n't"), "ready. Websocket is" + ((wsConnected) ? "" : "n't"), "ready.")
+    }
+}
+
+function loadOptions() {
+    console.log("Sending request for upload options");
+    ws.send(JSON.stringify({
+        type: "getUploadOptions"
+    }))
+}
+
+function parseOptions(msg) {
+    let options = msg.options;
+    console.log("got options", options);
+
+    let opts = document.getElementById("options");
+    for (let i = 0; i < options.length; i++) {
+        let opt = document.createElement("div");
+        $(opt).addClass("option");
+        let img = document.createElement("img");
+        img.src = "assets/targets/" + options[i];
+        opt.appendChild(img);
+        opt.innerHTML += options[i].replace(".png", "");
+        opts.appendChild(opt);
     }
 }

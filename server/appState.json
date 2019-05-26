@@ -25,5 +25,14 @@
             "latitude": 32.877624,
             "longitude": -117.240322
         }
+    },
+    {
+        "id": "broccoli",
+        "thumbnail": "broccoli.png",
+        "location": {
+            "latitude": 32.7517543,
+            "longitude": -117.164459
+        },
+        "experience": "video/VID_20190526_010746.mp4"
     }
 ]

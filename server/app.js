@@ -239,11 +239,11 @@ app.post("/uploadExperience", function(req, res) {
         let details = lastUploadDetails;
         console.log("Using", details, "for experience upload");
 
-        if (Object.keys(req.files).length === 0) {
-            lastUploadDetails = null;
-            res.status(400).send('No files were uploaded.');
-            return;
-        }
+        // if (Object.keys(req.files).length === 0) {
+        //     lastUploadDetails = null;
+        //     res.status(400).send('No files were uploaded.');
+        //     return;
+        // }
 
         // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
         let videoExperience = req.files.video;
@@ -252,12 +252,12 @@ app.post("/uploadExperience", function(req, res) {
 
         // Use the mv() method to place the file somewhere on your server
         let experience;
-        let folder = ('name' in videoExperience) ? "video" : ('name' in audioExperience) ? "audio" : null;
+        let folder = (videoExperience) ? "video" : (audioExperience) ? "audio" : null;
         if (!folder) return res.status(400).send("Error, didn't get a file");
 
-        experience = ('name' in videoExperience) ? videoExperience : audioExperience;
+        experience = (videoExperience) ? videoExperience : audioExperience;
 
-        experience.mv(_dirname + "/static/assets/" + folder + "/" + experience.name, function(err) {
+        experience.mv(__dirname + "/static/assets/" + folder + "/" + experience.name, function(err) {
             if (err) return res.status(500).send(err);
 
             addExperience(details, folder + "/" + experience.name);
@@ -322,6 +322,10 @@ wss.on("connection", function(ws, req) {
                         experiences: assets
                     }));
                     break;
+                case "getUploadOptions":
+                    console.log("Sending Upload Options");
+                    sendUploadOptions(ws);
+                    break;
                 default:
                     console.error("Got Unknown Websocket message type:", msg.type);
                     break;
@@ -359,10 +363,15 @@ function disconnectPendingRequests(sock, timeout) {
 
 function addExperience(target, asset) {
     let experience = {
-        target: target.sticker,
+        id: target.sticker.replace(".png", ""),
+        thumbnail: target.sticker,
         location: target.location,
-        asset: asset
+        experience: asset
     }
+
+    experience.location.latitude = parseFloat(experience.location.latitude);
+    experience.location.longitude = parseFloat(experience.location.longitude);
+
     assets.push(experience);
 
     fs.writeFile(__dirname + "/appState.json", JSON.stringify(assets, null, 4), function(err) {
@@ -391,5 +400,48 @@ function getExperiences() {
         } else {
             console.error("error while reading appState file " + err);
         }
+    });
+}
+
+function findInExperiences(target) {
+    let data;
+    try {
+        fs.statSync(__dirname + "/appState.json");
+        data = fs.readFileSync(__dirname + "/appState.json");
+    } catch (err) {
+        return -1;
+    }
+    let experiences = JSON.parse(data.toString());
+
+    for (let i = 0; i < experiences.length; i++) {
+        if (experiences[i].thumbnail === target) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+function sendUploadOptions(ws) {
+    let folder = __dirname + "/static/assets/targets";
+
+    fs.readdir(folder, function(err, items) {
+        if (err) {
+            console.error(err);
+        }
+        for (let i = items.length - 1; i >= 0; i--) {
+            if (items[i].startsWith('.')) {
+                items.splice(i, 1);
+            } else if (findInExperiences(items[i]) != -1) {
+                console.log(items[i], "found in appState.json. splicing");
+                items.splice(i, 1);
+            }
+        }
+        console.log("Targets", items);
+
+        ws.send(JSON.stringify({
+            type: "uploadOptions",
+            options: items
+        }));
+
     });
 }
