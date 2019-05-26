@@ -2,7 +2,7 @@
     {
         "id": "cropped-bluefrog",
         "thumbnail": "cropped-bluefrog.jpg",
-        "experience": "video/whistle.mp4",
+        "experience": "video/test.mp4",
         "location": {
             "latitude": 32.877924,
             "longitude": -117.240322
@@ -20,7 +20,7 @@
     {
         "id": "fab-fox",
         "thumbnail": "fab-fox.png",
-        "experience": "video/test.mp4",
+        "experience": "video/whistle.mp4",
         "location": {
             "latitude": 32.877624,
             "longitude": -117.240322

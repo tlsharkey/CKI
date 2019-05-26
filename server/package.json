@@ -32,7 +32,6 @@
   "homepage": "https://github.com/tlsharkey/CKI#readme",
   "dependencies": {
     "aframe": "^0.9.2",
-    "dgram": "^1.0.1",
     "express": "^4.16.4",
     "express-fileupload": "^1.1.4",
     "formidable": "^1.2.1",

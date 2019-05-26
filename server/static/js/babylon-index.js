@@ -3,6 +3,7 @@ const modelFile = 'tree.glb' // 3D model to spawn at tap
 const startScale = new BABYLON.Vector3(0.01, 0.01, 0.01) // Initial scale value for our model
 const endScale = new BABYLON.Vector3(0.05, 0.05, 0.05) // Ending scale value for our model
 const animationMillis = 750 // Animate over 0.75 seconds
+var actionManager;
 
 let surface, engine, scene, camera
 
@@ -122,17 +123,22 @@ const startScene = () => {
         //console.log("Got Image Target", e);
         for (let i = 0; i < experiences.length; i++) {
             if (experiences[i].id === e.name) {
-                console.debug("Found match", experiences[i].id, e.name);
-                copyVec(e.position, experiences[i].model.position);
+                addToAverage(experiences[i].model, e.position, e.rotation);
+                //console.debug("Found match", experiences[i].id, e.name);
+                ///copyVec(e.position, experiences[i].model.position);
                 //console.log("Rotations", e.rotation, experiences[i].model.rotationQuaternion);
-                copyVec(e.rotation, experiences[i].model.rotationQuaternion);
+                ///copyVec(e.rotation, experiences[i].model.rotationQuaternion);
+                //experiences[i].model.rotation.x += Math.PI / 2;
+                //experiences[i].model.rotation.z += Math.PI / 2;
                 //copyVec(e.scale, experiences[i].model.scaling);
                 //experiences[i].scaling.set(e.scale, e.scale, e.scale);
                 return;
             }
         }
         console.error("couldn't find model corresponding to the image target");
-    })
+    });
+
+    actionManager = new BABYLON.ActionManager(scene);
 }
 
 const onxrloaded = () => {
@@ -171,4 +177,61 @@ function copyVec(from, to) {
     if (from.w) {
         to['w'] = from.w;
     }
+}
+
+function addVector(vector, addTo) {
+    addTo.x += vector.x;
+    addTo.y += vector.y;
+    addTo.z += vector.z;
+}
+
+function multVector(vector, multTo) {
+    multTo.x *= vector.x;
+    multTo.y *= vector.y;
+    multTo.z *= vector.z;
+}
+
+function divideVector(vector, divTo) {
+    divTo.x /= vector.x;
+    divTo.y /= vector.y;
+    divTo.z /= vector.z;
+}
+
+function addToAverage(model, position, rotation) {
+    console.log("Average Before:", model.averageTransform, "\nadding pos:", position, "\nadding rot:", rotation);
+    //// Open For Increment ////
+    // Position
+    model.averageTransform.position.x *= model.averageTransform.numSamples;
+    model.averageTransform.position.y *= model.averageTransform.numSamples;
+    model.averageTransform.position.z *= model.averageTransform.numSamples;
+    // Rotation
+    model.averageTransform.rotation.x *= model.averageTransform.numSamples;
+    model.averageTransform.rotation.y *= model.averageTransform.numSamples;
+    model.averageTransform.rotation.z *= model.averageTransform.numSamples;
+    // Increment
+    model.averageTransform.numSamples++;
+
+    //// Add ////
+    addVector(position, model.averageTransform.position);
+    addVector(rotation, model.averageTransform.rotation);
+
+    //// Average ////
+    // Position
+    model.averageTransform.position.x /= model.averageTransform.numSamples;
+    model.averageTransform.position.y /= model.averageTransform.numSamples;
+    model.averageTransform.position.z /= model.averageTransform.numSamples;
+    // Rotation
+    model.averageTransform.rotation.x /= model.averageTransform.numSamples;
+    model.averageTransform.rotation.y /= model.averageTransform.numSamples;
+    model.averageTransform.rotation.z /= model.averageTransform.numSamples;
+
+    //// Set ////
+    model.position.x = model.averageTransform.position.x;
+    model.position.y = model.averageTransform.position.y;
+    model.position.z = model.averageTransform.position.z;
+    model.rotation.x = model.averageTransform.rotation.x;
+    model.rotation.y = model.averageTransform.rotation.y;
+    model.rotation.z = model.averageTransform.rotation.z;
+
+    console.log("Average After:", model.averageTransform);
 }

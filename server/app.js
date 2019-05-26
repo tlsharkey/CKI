@@ -200,6 +200,11 @@ app.get("/experience", function(req, res) {
     res.sendFile(__dirname + "/static/viewer.html");
     //res.sendFile(__dirname + "/static/three_eg.html");
     console.log("Served viewer");
+});
+
+app.get("/bab", function(req, res) {
+    res.sendFile(__dirname + "/static/babylontesting.html");
+    console.log("Server Bab");
 })
 
 app.get("/3", function(req, res) {
