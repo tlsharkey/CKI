@@ -197,8 +197,8 @@ app.get("/create", function(req, res) {
 });
 
 app.get("/experience", function(req, res) {
-    res.sendFile(__dirname + "/static/viewer.html");
-    //res.sendFile(__dirname + "/static/three_eg.html");
+    //res.sendFile(__dirname + "/static/viewer.html");
+    res.sendFile(__dirname + "/static/three_eg.html");
     console.log("Served viewer");
 });
 
