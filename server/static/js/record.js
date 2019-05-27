@@ -89,3 +89,44 @@ function init() {
         }
     });
 }
+
+function makePostRequest() {
+    var form = document.getElementById("experienceRecording");
+    var file = $("input[name=video]")[0].files[0];
+    console.log("Data to POST", form, file);
+
+    //// Get Form Data
+    var formData = new FormData(form);
+    formData.append("video", $("input[name=video]")[0].files[0]);
+    console.log("form data", formData);
+
+    //// Make POST Request
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", '/uploadExperience', true);
+    xhr.setRequestHeader("Content-Type", "multipart/form-data");
+    xhr.send(formData);
+
+    //// Keep track of upload progress
+    let fileSize = file.size;
+    $("progress").max = fileSize;
+    $("progress").value = 0;
+
+    xhr.upload.addEventListener("progress", function(evt) {
+        if (evt.lengthComputable) {
+            console.log("add upload event-listener" + evt.loaded + "/" + evt.total);
+            $("progress").value = evt.loaded;
+        }
+    }, false);
+
+    xhr.onreadystatechange = function() { // Call a function when the state changes.
+        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+            onUploadComplete();
+        }
+    }
+
+    cleanUpSecondPost();
+}
+
+function onUploadComplete() {
+    console.log("Upload Completed");
+}

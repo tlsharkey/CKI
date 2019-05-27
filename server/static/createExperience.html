@@ -1,6 +1,12 @@
 <html>
 
     <style src="/css/CKI">
+        :root {
+            --loading-color-start: dodgerBlue;
+            --loading-color-end: #dddddd;
+            --loading-size: 50em;
+        }
+
         .select {
             width: 90%;
             padding: 2.5em;
@@ -43,6 +49,89 @@
             overflow: scroll;
             border-radius: 1em;
         }
+
+        .lds-grid {
+            display: inline-block;
+            position: relative;
+            width: var(--loading-size);
+            height: var(--loading-size);
+        }
+
+        .lds-grid div {
+            position: absolute;
+            width: calc(var(--loading-size)/6);
+            height: calc(var(--loading-size)/6);
+            border-radius: 50%;
+            background: dodgerBlue;
+            animation: lds-grid 1.2s linear infinite;
+        }
+
+        .lds-grid div:nth-child(1) {
+            top: 6px;
+            left: 6px;
+            animation-delay: 0s;
+        }
+
+        .lds-grid div:nth-child(2) {
+            top: 6px;
+            left: calc(6px + var(--loading-size)* 1/3);
+            animation-delay: -0.4s;
+        }
+
+        .lds-grid div:nth-child(3) {
+            top: 6px;
+            left: calc(6px + var(--loading-size)* 2/3);
+            animation-delay: -0.8s;
+        }
+
+        .lds-grid div:nth-child(4) {
+            top: calc(6px + var(--loading-size)* 1/3);
+            left: 6px;
+            animation-delay: -0.4s;
+        }
+
+        .lds-grid div:nth-child(5) {
+            top: calc(6px + var(--loading-size)* 1/3);
+            left: calc(6px + var(--loading-size)* 1/3);
+            animation-delay: -0.8s;
+        }
+
+        .lds-grid div:nth-child(6) {
+            top: calc(6px + var(--loading-size)* 1/3);
+            left: calc(6px + var(--loading-size)* 2/3);
+            animation-delay: -1.2s;
+        }
+
+        .lds-grid div:nth-child(7) {
+            top: calc(6px + var(--loading-size)* 2/3);
+            left: 6px;
+            animation-delay: -0.8s;
+        }
+
+        .lds-grid div:nth-child(8) {
+            top: calc(6px + var(--loading-size)* 2/3);
+            left: calc(6px + var(--loading-size)* 1/3);
+            animation-delay: -1.2s;
+        }
+
+        .lds-grid div:nth-child(9) {
+            top: calc(6px + var(--loading-size)* 2/3);
+            left: calc(6px + var(--loading-size)* 2/3);
+            animation-delay: -1.6s;
+        }
+
+        @keyframes lds-grid {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                background-color: #dddddd;
+                opacity: 0.5;
+            }
+        }
     </style>
 
     <head>
@@ -58,7 +147,7 @@
         <a href="/">Home</a>
         <a href="/map">Map</a>
         <a href="/create">Create Experience</a>
-        <form id="experienceData" style="display:block;" ref="uploadForm" action="/uploadDetails" method="post" target="_blank" onsubmit="cleanUpFirstPost()">
+        <form id="experienceData" style="display:block;" ref="uploadForm" action="/uploadDetails" method="post" target="hidden-form" onsubmit="cleanUpFirstPost()">
             <h4>Select the Sticker you're placing</h4>
             <input type="text" name="sticker" />
 
@@ -83,7 +172,7 @@
         </form>
 
 
-        <form id="experienceRecording" style="display:none;" ref="uploadForm" action="/uploadExperience" method="post" encType="multipart/form-data" target="_self" onsubmit="cleanUpSecondPost()">
+        <form id="experienceRecording" style="display:none;" ref="uploadForm" action="/uploadExperience" method="post" encType="multipart/form-data" target="hidden-form" onsubmit="cleanUpSecondPost()">
             <h4>Record your experience (pick one - will default to video)</h4>
             <span>Record Video and Audio: </span>
             <input type="file" name="video" accept="video/*;capture=camcorder">
@@ -100,8 +189,21 @@
             <h1>Please be patient while we upload your experience.</h1>
             <h6>I don't know why but this process currently takes FOREVER</h6>
             <br /><br />
-            <img src="assets/exacerbated.png" />
+            <div class="lds-grid">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+
         </div>
+
+        <iframe style="display:none" name="hidden-form"></iframe>
 
     </body>
 

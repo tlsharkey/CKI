@@ -14,7 +14,6 @@ const _config = require("./config/config");
 
 const app = express();
 
-
 // =============================================================================
 // Globals
 var tcpDevices = [];
@@ -261,7 +260,7 @@ app.post("/uploadExperience", function(req, res) {
             if (err) return res.status(500).send(err);
 
             addExperience(details, folder + "/" + experience.name);
-            res.end("Thank You");
+            res.status(200).send("Thank You");
         });
     });
 });
@@ -292,8 +291,8 @@ const wss = new WebSocketServer({
 
 wss.on("connection", function(ws, req) {
     console.log("Connecting WebSocket");
-    ws.id = ++wsDeviceIds;
 
+    ws.id = wsDeviceIds++;
     wsDevices[ws.id] = {
         socket: ws,
         id: ws.id,
@@ -377,6 +376,14 @@ function addExperience(target, asset) {
     fs.writeFile(__dirname + "/appState.json", JSON.stringify(assets, null, 4), function(err) {
         if (err) {
             return console.error("Failed to update application state " + err);
+        }
+
+        for (let i = 0; i < wsDevices.length; i++) {
+            if (wsDevices[i]) {
+                wsDevices[i].socket.send(JSON.stringify({
+                    type: "uploadComplete"
+                }));
+            }
         }
 
         console.log("Added Experience", experience);

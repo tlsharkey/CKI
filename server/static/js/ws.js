@@ -54,6 +54,11 @@ ws.onmessage = function(event) {
             case "uploadOptions":
                 parseOptions(msg);
                 break;
+            case "uploadComplete":
+                if (pageType === "create") {
+                    window.location.href = window.location.href.replace("create", "");
+                }
+                break;
             default:
                 console.warn("Unknown Message");
         }

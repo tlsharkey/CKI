@@ -1,14 +1,5 @@
 [
     {
-        "id": "cropped-bluefrog",
-        "thumbnail": "cropped-bluefrog.jpg",
-        "experience": "video/test.mp4",
-        "location": {
-            "latitude": 32.877924,
-            "longitude": -117.240322
-        }
-    },
-    {
         "id": "pathfrog",
         "thumbnail": "pathfrog.png",
         "experience": "video/signs.mp4",
@@ -34,5 +25,50 @@
             "longitude": -117.164459
         },
         "experience": "video/VID_20190526_010746.mp4"
+    },
+    {
+        "id": "buddah-fox",
+        "thumbnail": "buddah-fox.png",
+        "location": {
+            "latitude": 32.7517005,
+            "longitude": -117.16443310000001
+        },
+        "experience": "video/Screen Recording 2019-03-19 at 10.45.13 PM.mov"
+    },
+    {
+        "id": "cropped-bluefrog.jpg",
+        "thumbnail": "cropped-bluefrog.jpg",
+        "location": {
+            "latitude": 32.7517034,
+            "longitude": -117.1644623
+        },
+        "experience": "video/VID_20190527_003527.mp4"
+    },
+    {
+        "id": "embarassed-fox",
+        "thumbnail": "embarassed-fox.png",
+        "location": {
+            "latitude": 32.7517476,
+            "longitude": -117.1644631
+        },
+        "experience": "video/VID_20190527_003527.mp4"
+    },
+    {
+        "id": "flower-pentagram",
+        "thumbnail": "flower-pentagram.png",
+        "location": {
+            "latitude": 32.7517178,
+            "longitude": -117.1644731
+        },
+        "experience": "video/VID_20190527_003527.mp4"
+    },
+    {
+        "id": "flyer.jpg",
+        "thumbnail": "flyer.jpg",
+        "location": {
+            "latitude": 32.7517204,
+            "longitude": -117.1644721
+        },
+        "experience": "video/VID_20190527_003527.mp4"
     }
 ]
