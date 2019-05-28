@@ -11,8 +11,7 @@ function getLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition);
     } else {
-        document.getElementById("lat").value = "ERROR";
-        document.getElementById("long").value = "No GPS Access";
+        document.getElementById("location").innerHTML = "ERROR, No GPS Access";
     }
 }
 
@@ -38,6 +37,12 @@ function showPosition(position) {
     console.log("Average GPS location:", avg);
     document.getElementById("lat").value = avg.latitude;
     document.getElementById("long").value = avg.longitude;
+    //document.getElementById("location").innerHTML = avg.latitude + " x " + avg.longitude;
+    document.getElementById("getLocationButton").innerHTML = "Your GPS Coords:<br>" + avg.latitude + " x " + avg.longitude;
+    if ($("#lat").val() && $("#long").val() && $("input[type=text][name=sticker]").val()) {
+        console.log("Showing Submit Button", $("#lat").val(), $("#long").val(), $("#sticker").val());
+        $($("#sticker")[0].parentElement).find("div.submit").css("display", "block");
+    }
 }
 
 // Begin Recording video
@@ -86,6 +91,11 @@ function init() {
             });
         } else {
             opts.style.display = "none";
+        }
+
+        if ($("#lat").val() && $("#long").val() && $("input[type=text][name=sticker]").val()) {
+            console.log("Showing Submit Button", $("#lat").val(), $("#long").val(), $("#sticker").val());
+            $($("#sticker")[0].parentElement).find("div.submit").css("display", "block");
         }
     });
 }

@@ -1,7 +1,241 @@
+:root {
+    --light-blue: #bbfdff;
+    --grey: #b5b1b2;
+    --purple-muddy: #ada9b7;
+    --purple: #a9afd1;
+    --purple-dark: #7c809b;
+    --purple-light: #cacfff;
+    --loading-size: 50em;
+}
+
+body {
+    background-color: var(--purple-light);
+}
+
+
+
+/* ***** ANIMATIONS ***** */
+@keyframes expand {
+    from {
+        height: 0;
+    }
+    to {
+        height: "";
+    }
+}
+
+@keyframes lds-grid {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        background-color: #dddddd;
+        opacity: 0.5;
+    }
+}
+
+@keyframes emphasize {
+    0%,100% {
+        background-color: var(--purple-dark);
+        color: white;
+    }
+    50% {
+        background-color: var(--light-blue);
+        color: black;
+    }
+}
+
+
+
+/* ***** NAVIGATION BAR ***** */
+.header {
+    padding: 1em;
+    width: 100%;
+    height: 7em;
+    background-color: var(--purple-dark);
+}
+
+.header td {
+    text-align: center;
+}
+
+.header a {
+    padding: 0.5em;
+    border-radius: 1em;
+    color: var(--purple-light);
+    text-align: center;
+    font-size: 3em;
+}
+
+.header a:hover{
+    background-color: var(--purple);
+    color: var(--purple-dark);
+    font-weight: bold;
+}
+
+.header a.selected {
+    font-weight: bold;
+    color: white;
+}
+
+
+
+/* ***** SELECTION ELEMENT ***** */
+.cki-button,
+.submit,
+.select {
+    padding: 1em;
+    margin: 1em;
+    background-color: var(--purple-dark);
+    color: white;
+    text-align: center;
+    vertical-align: center;
+    border-radius: 1em;
+    font-size: 3em;
+    align-content: center;
+}
+
+.submit {
+    border-style: solid;
+    border-color: var(--purple-muddy);
+    border-width: 0.5em;
+    animation-duration: 3s;
+    animation-name: emphasize;
+    animation-delay: 2s;
+}
+
+.option {
+    background-color: var(--purple-dark);
+    color: white;
+    width: 100%;
+    vertical-align: center;
+    align-self: center;
+}
+
+.option img {
+    height: 7em;
+}
+
+#options {
+    left: 0;
+    margin: 1em;
+    width: calc(100% - 2em);
+    top: calc(+5em);
+    height: calc(80vh - 5em);
+    position: absolute;
+    display: none;
+    animation-duration: 3s;
+    animation-name: expand;
+    overflow: scroll;
+    border-radius: 1em;
+}
+
+input[type=double], input[type=text], input[type=submit], input[type=file]{
+    visibility: hidden;
+    position: absolute;
+    height: -10em;
+}
+
+
+
+/* ***** LOADING ***** */
 #loading {
     width:1em;
     height:1em;
     border-radius:1em;
     background-color:red;
     align-self:center;
+}
+
+.lds-grid {
+    display: inline-block;
+    position: relative;
+    width: var(--loading-size);
+    height: var(--loading-size);
+}
+
+.lds-grid div {
+    position: absolute;
+    width: calc(var(--loading-size)/6);
+    height: calc(var(--loading-size)/6);
+    border-radius: 50%;
+    background: dodgerBlue;
+    animation: lds-grid 1.2s linear infinite;
+}
+
+.lds-grid div:nth-child(1) {
+    top: 6px;
+    left: 6px;
+    animation-delay: 0s;
+}
+
+.lds-grid div:nth-child(2) {
+    top: 6px;
+    left: calc(6px + var(--loading-size)* 1/3);
+    animation-delay: -0.4s;
+}
+
+.lds-grid div:nth-child(3) {
+    top: 6px;
+    left: calc(6px + var(--loading-size)* 2/3);
+    animation-delay: -0.8s;
+}
+
+.lds-grid div:nth-child(4) {
+    top: calc(6px + var(--loading-size)* 1/3);
+    left: 6px;
+    animation-delay: -0.4s;
+}
+
+.lds-grid div:nth-child(5) {
+    top: calc(6px + var(--loading-size)* 1/3);
+    left: calc(6px + var(--loading-size)* 1/3);
+    animation-delay: -0.8s;
+}
+
+.lds-grid div:nth-child(6) {
+    top: calc(6px + var(--loading-size)* 1/3);
+    left: calc(6px + var(--loading-size)* 2/3);
+    animation-delay: -1.2s;
+}
+
+.lds-grid div:nth-child(7) {
+    top: calc(6px + var(--loading-size)* 2/3);
+    left: 6px;
+    animation-delay: -0.8s;
+}
+
+.lds-grid div:nth-child(8) {
+    top: calc(6px + var(--loading-size)* 2/3);
+    left: calc(6px + var(--loading-size)* 1/3);
+    animation-delay: -1.2s;
+}
+
+.lds-grid div:nth-child(9) {
+    top: calc(6px + var(--loading-size)* 2/3);
+    left: calc(6px + var(--loading-size)* 2/3);
+    animation-delay: -1.6s;
+}
+
+
+
+/* ***** MAP ****** */
+#overlay {
+    position: absolute;
+    left: 0;
+    top: 6em;
+    width: 100%;
+    height: 85%;
+    opacity: 0.1;
+    background-color: var(--purple);
+    z-index: 2;
+    pointer-events: none;
+}
+
+
+
+/* ***** DEVICES ***** */
+@media only screen and (min-width: 768px) {
+
 }

@@ -1,8 +1,10 @@
 <html>
-
-    <style src="/css/CKI">
-        a {
-            padding: 1em;
+    <link rel="stylesheet" href="css/bootstrap.css" />
+    <link rel="stylesheet" href="css/CKI.css" />
+    <style>
+        div.video-container video {
+            border-radius: 0.5em;
+            width: 100%;
         }
     </style>
 
@@ -15,21 +17,30 @@
     </head>
 
     <body>
-        <h1>Landing Page</h1>
-        <a>Home</a>
-        <a href="/map">Map</a>
-        <a href="/experience">View</a>
-        <a href="/create">Create</a><br /><br />
-        <div style="width:90%; border:1px solid red;" align="center">
-            <video width="100%" controls>
+        <table class="header">
+            <tbody>
+                <tr>
+                    <td>
+                        <a class="selected" href="/">Home</a>
+                    </td>
+                    <td>
+                        <a href="/map">Map</a>
+                    </td>
+                    <td>
+                        <a href="/experience">View</a>
+                    </td>
+                    <td>
+                        <a href="/create">Create</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="video-container" style="width:100%;" align="center">
+            <video controls>
                 <source src="video/signs.mp4" type="video/mp4">
                 Your browser does not support HTML5 video.
             </video>
         </div>
     </body>
-
-    <script src="/js/streamVideo">
-        // Import code from /js/yourjsfile
-    </script>
 
 </html>
