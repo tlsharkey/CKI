@@ -1,22 +1,17 @@
 <html>
     <link rel="stylesheet" href="css/bootstrap.css" />
     <link rel="stylesheet" href="css/CKI.css" />
-    <style>
-        div.video-container video {
-            border-radius: 0.5em;
-            width: 100%;
-        }
-    </style>
+    <script src="js/jquery.min.js"></script>
 
     <head>
         <meta charset="utf-8" />
         <meta name="CKI" content="Recorded World Experiences" />
         <meta name="keywords" content="Speculative Design, UC San Diego, Aritificial Intelligence, AI, Governance" />
         <meta name="author" content="Mariel Lyn Velicaria, Akira Mariano, Laini Nguyen, Tommy Sharkey" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     </head>
 
-    <body>
+    <body onload="setWidth()">
+
         <table class="header">
             <tbody>
                 <tr>
@@ -35,12 +30,23 @@
                 </tr>
             </tbody>
         </table>
-        <div class="video-container" style="width:100%;" align="center">
+
+        <div class="video-container" align="center">
             <video controls>
                 <source src="video/signs.mp4" type="video/mp4">
                 Your browser does not support HTML5 video.
             </video>
         </div>
+
+        <script>
+            function setWidth() {
+                let width = $("table").css("width")
+                $(".video-container").css("width", "100%");
+                $("video").css("width", "100%");
+                $("source").css("width", "100%");
+                console.log("Setting Width to", $("table").css("width"), "\n", $(".video-container").css("width"));
+            }
+        </script>
     </body>
 
 </html>

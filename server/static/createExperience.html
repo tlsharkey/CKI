@@ -45,7 +45,6 @@
 
             <h4>Get GPS Location of the sticker</h4>
             <div class="select" id="getLocationButton" onclick="getLocation()">Get Location</div>
-            <!-- <h3 id="location"></h3> -->
             <input id="lat" name="latitude" type="double" />
             <input id="long" name="longitude" type="double" />
             <input type="submit" />
@@ -54,11 +53,8 @@
 
 
         <form id="experienceRecording" style="display:none;" ref="uploadForm" action="/uploadExperience" method="post" encType="multipart/form-data" target="hidden-form" onsubmit="cleanUpSecondPost()">
-            <h4>Record your experience (pick one - will default to video)</h4>
-            <span>Record Video and Audio: </span>
             <input type="file" name="video" accept="video/*;capture=camcorder">
             <input type="file" name="audio" accept="audio/*;capture=microphone">
-            <span>Record Audio: </span>
 
             <div class="cki-button" id="recordVideo">Record Video</div>
             <div class="cki-button" id="recordAudio">Record Audio</div>
@@ -68,21 +64,8 @@
         </form>
 
 
-        <div id="loading">
-            <h1>Please be patient while we upload your experience.</h1>
-            <h6>I don't know why but this process currently takes FOREVER</h6>
-            <br /><br />
-            <div class="lds-grid">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-            </div>
+        <div id="loading" style="text-align : center">
+            <img src="assets/load-circle.svg" style="width: 50em" align="center" />
 
         </div>
 

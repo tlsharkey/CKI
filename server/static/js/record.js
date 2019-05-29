@@ -8,6 +8,11 @@
 var gpsReadings = [];
 
 function getLocation() {
+    let load = document.createElement("img");
+    load.src = "assets/load-circle-light.svg";
+    load.setAttribute("width", "145em");
+    document.getElementById("getLocationButton").innerHTML = "";
+    document.getElementById("getLocationButton").appendChild(load);
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition);
     } else {

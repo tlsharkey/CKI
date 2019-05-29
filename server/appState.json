@@ -70,5 +70,23 @@
             "longitude": -117.1644721
         },
         "experience": "video/VID_20190527_003527.mp4"
+    },
+    {
+        "id": "fox-bark",
+        "thumbnail": "fox-bark.png",
+        "location": {
+            "latitude": 32.7517181,
+            "longitude": -117.1644746
+        },
+        "experience": "video/IMG_20190528_200237.jpg"
+    },
+    {
+        "id": "fox-hearts",
+        "thumbnail": "fox-hearts.png",
+        "location": {
+            "latitude": 32.751726999999995,
+            "longitude": -117.16450990000001
+        },
+        "experience": "video/invite.txt"
     }
 ]
