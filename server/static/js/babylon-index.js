@@ -62,20 +62,64 @@ const startScene = () => {
         //console.log("Got Image Target", e);
         for (let i = 0; i < experiences.length; i++) {
             if (experiences[i].id === e.name) {
-                addToAverage(experiences[i].model, e.position, e.rotation);
-                //console.debug("Found match", experiences[i].id, e.name);
-                ///copyVec(e.position, experiences[i].model.position);
-                //console.log("Rotations", e.rotation, experiences[i].model.rotationQuaternion);
-                ///copyVec(e.rotation, experiences[i].model.rotationQuaternion);
-                //experiences[i].model.rotation.x += Math.PI / 2;
-                //experiences[i].model.rotation.z += Math.PI / 2;
-                //copyVec(e.scale, experiences[i].model.scaling);
-                //experiences[i].scaling.set(e.scale, e.scale, e.scale);
+                addToAverage(experiences[i].model, experiences[i].model.averageTransform, e.position, e.rotation);
+                addToAverage(experiences[i].model, experiences[i].model.averageSubtransform, e.position, e.rotation);
+
+                let d_position = Math.abs(getDisplacement(
+                    experiences[i].model.averageSubtransform.position,
+                    experiences[i].model.averageTransform.position
+                ));
+
+                let d_rotation = Math.abs(getDisplacement(
+                    experiences[i].model.averageSubtransform.rotation,
+                    experiences[i].model.averageSubtransform.rotation
+                ));
+
+
+                if (experiences[i].model.averageSubtransform.numSamples > 5) {
+                    //console.log("number of samples", experiences[i].model.averageSubtransform.numSamples);
+                    if (d_position > 1) {
+                        // Reset Position
+                        console.log("Resetting Position. deltas:", d_position, d_rotation);
+                        experiences[i].model.averageTransform.position = experiences[i].model.averageSubtransform.position;
+                    }
+
+                    if (d_rotation > 1) {
+                        // Reset Rotation
+                        console.log("Resetting Rotation. deltas:", d_position, d_rotation);
+                        experiences[i].model.averageTransform.rotation = experiences[i].model.averageSubtransform.rotation;
+                    }
+                }
                 return;
             }
         }
         console.error("couldn't find model corresponding to the image target");
     });
+
+    scene.onXrImageFoundObservable.add(e => {
+        for (let i = 0; i < experiences.length; i++) {
+            if (experiences[i].id === e.name) {
+                experiences[i].model.averageSubtransform = {
+                    position: {
+                        x: 0,
+                        y: 0,
+                        z: 0
+                    },
+                    rotation: {
+                        x: 0,
+                        y: 0,
+                        z: 0
+                    },
+                    numSamples: 0,
+                    standardDev: {
+                        position: 0,
+                        rotation: 0
+                    }
+                }
+                return;
+            }
+        }
+    })
 
     actionManager = new BABYLON.ActionManager(scene);
 }
@@ -136,41 +180,53 @@ function divideVector(vector, divTo) {
     divTo.z /= vector.z;
 }
 
-function addToAverage(model, position, rotation) {
-    console.log("Average Before:", model.averageTransform, "\nadding pos:", position, "\nadding rot:", rotation);
+function addToAverage(model, average, position, rotation) {
     //// Open For Increment ////
     // Position
-    model.averageTransform.position.x *= model.averageTransform.numSamples;
-    model.averageTransform.position.y *= model.averageTransform.numSamples;
-    model.averageTransform.position.z *= model.averageTransform.numSamples;
+    average.position.x *= average.numSamples;
+    average.position.y *= average.numSamples;
+    average.position.z *= average.numSamples;
     // Rotation
-    model.averageTransform.rotation.x *= model.averageTransform.numSamples;
-    model.averageTransform.rotation.y *= model.averageTransform.numSamples;
-    model.averageTransform.rotation.z *= model.averageTransform.numSamples;
+    average.rotation.x *= average.numSamples;
+    average.rotation.y *= average.numSamples;
+    average.rotation.z *= average.numSamples;
     // Increment
-    model.averageTransform.numSamples++;
+    average.numSamples++;
 
     //// Add ////
-    addVector(position, model.averageTransform.position);
-    addVector(rotation, model.averageTransform.rotation);
+    addVector(position, average.position);
+    addVector(rotation, average.rotation);
 
     //// Average ////
     // Position
-    model.averageTransform.position.x /= model.averageTransform.numSamples;
-    model.averageTransform.position.y /= model.averageTransform.numSamples;
-    model.averageTransform.position.z /= model.averageTransform.numSamples;
+    average.position.x /= average.numSamples;
+    average.position.y /= average.numSamples;
+    average.position.z /= average.numSamples;
     // Rotation
-    model.averageTransform.rotation.x /= model.averageTransform.numSamples;
-    model.averageTransform.rotation.y /= model.averageTransform.numSamples;
-    model.averageTransform.rotation.z /= model.averageTransform.numSamples;
+    average.rotation.x /= average.numSamples;
+    average.rotation.y /= average.numSamples;
+    average.rotation.z /= average.numSamples;
 
     //// Set ////
-    model.position.x = model.averageTransform.position.x;
-    model.position.y = model.averageTransform.position.y;
-    model.position.z = model.averageTransform.position.z;
-    model.rotation.x = model.averageTransform.rotation.x;
-    model.rotation.y = model.averageTransform.rotation.y;
-    model.rotation.z = model.averageTransform.rotation.z;
+    model.position.x = average.position.x;
+    model.position.y = average.position.y;
+    model.position.z = average.position.z;
+    model.rotation.x = average.rotation.x;
+    model.rotation.y = average.rotation.y;
+    model.rotation.z = average.rotation.z;
+}
 
-    console.log("Average After:", model.averageTransform);
+function getDisplacement(vec1, vec2) {
+    let mag1 = vectorMagnitude(vec1);
+    let mag2 = vectorMagnitude(vec2);
+    return mag2 - mag1;
+}
+
+function vectorMagnitude(vector) {
+    let mag = Math.sqrt(
+        Math.pow(vector.x, 2) +
+        Math.pow(vector.y, 2) +
+        Math.pow(vector.z, 2)
+    )
+    return mag;
 }

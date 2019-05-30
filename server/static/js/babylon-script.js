@@ -51,7 +51,28 @@ ws.onmessage = function(event) {
                             y: 0,
                             z: 0
                         },
-                        numSamples: 0
+                        numSamples: 0,
+                        standardDev: {
+                            position: 0,
+                            rotation: 0
+                        }
+                    }
+                    experiences[i].model["averageSubtransform"] = {
+                        position: {
+                            x: 0,
+                            y: 0,
+                            z: 0
+                        },
+                        rotation: {
+                            x: 0,
+                            y: 0,
+                            z: 0
+                        },
+                        numSamples: 0,
+                        standardDev: {
+                            position: 0,
+                            rotation: 0
+                        }
                     }
 
                     let mat = new BABYLON.StandardMaterial("mat", scene);
