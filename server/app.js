@@ -11,6 +11,7 @@ const dgram = require("dgram");
 const fs = require("fs");
 const net = require("net");
 const _config = require("./config/config");
+const apiKey = require("./static/assets/googleMapsApiKey");
 
 const app = express();
 
@@ -324,6 +325,13 @@ wss.on("connection", function(ws, req) {
                 case "getUploadOptions":
                     console.log("Sending Upload Options");
                     sendUploadOptions(ws);
+                    break;
+                case "getApiKey":
+                    console.log("Sending Google Maps API Key");
+                    ws.send(JSON.stringify({
+                        type: "apiKey",
+                        key: apiKey.key
+                    }));
                     break;
                 default:
                     console.error("Got Unknown Websocket message type:", msg.type);

@@ -59,6 +59,9 @@ ws.onmessage = function(event) {
                     window.location.href = window.location.href.replace("create", "");
                 }
                 break;
+            case "apiKey":
+                $.getScript("https://maps.googleapis.com/maps/api/js?key=" + msg.key + "&callback=myMap");
+                break;
             default:
                 console.warn("Unknown Message");
         }
@@ -66,6 +69,11 @@ ws.onmessage = function(event) {
 }
 
 function loadExperiences() {
+    if (pageType === "map") {
+        ws.send(JSON.stringify({
+            type: "getApiKey"
+        }))
+    }
     console.log("Sending getExperiences request");
     ws.send(JSON.stringify({
         type: "getExperiences"
