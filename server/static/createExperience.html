@@ -1,6 +1,13 @@
 <html>
     <link rel="stylesheet" href="css/bootstrap.css" />
     <link rel="stylesheet" href="css/CKI.css" />
+    <style>
+        h1 {
+            color: var(--purple-dark);
+            font-size: 5em;
+            padding: 1em;
+        }
+    </style>
 
     <head>
         <meta charset="utf-8" />
@@ -32,7 +39,7 @@
 
 
         <form id="experienceData" style="display:block;" ref="uploadForm" action="/uploadDetails" method="post" target="hidden-form" onsubmit="cleanUpFirstPost()">
-            <h2>Select the Sticker you're placing</h2>
+            <h1>Create your own experience</h1>
             <input type="text" name="sticker" />
 
             <div id="sticker" class="select">
@@ -40,10 +47,6 @@
                 <div id="options"></div>
             </div>
 
-
-            <br />
-
-            <h4>Get GPS Location of the sticker</h4>
             <div class="select" id="getLocationButton" onclick="getLocation()">Get Location</div>
             <input id="lat" name="latitude" type="double" />
             <input id="long" name="longitude" type="double" />
@@ -64,7 +67,7 @@
         </form>
 
 
-        <div id="loading" style="text-align : center">
+        <div id="loading" style="text-align : center;">
             <img src="assets/load-circle.svg" style="width: 50em" align="center" />
 
         </div>

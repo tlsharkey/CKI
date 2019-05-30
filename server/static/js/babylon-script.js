@@ -55,11 +55,22 @@ ws.onmessage = function(event) {
                     }
 
                     let mat = new BABYLON.StandardMaterial("mat", scene);
-                    mat.diffuseTexture = new BABYLON.VideoTexture("video", [experiences[i].experience], scene, true);
-                    mat.diffuseTexture.video.loop = false;
-                    mat.diffuseTexture.video.autoplay = false;
-
-                    experiences[i].model.material = mat;
+                    if (experiences[i].experience.startsWith("video")) {
+                        mat.diffuseTexture = new BABYLON.VideoTexture("video", [experiences[i].experience], scene, true);
+                        mat.diffuseTexture.video.loop = false;
+                        mat.diffuseTexture.video.autoplay = false;
+                        experiences[i].model.material = mat;
+                    } else {
+                        mat.diffuseTexture = new BABYLON.Texture("assets/sound.png", scene);
+                        mat.specularColor = new BABYLON.Color3(0, 0, 0);
+                        experiences[i].model.material = mat;
+                        let sound = new BABYLON.Sound("sound", experiences[i].experience, scene, null, {
+                            loop: false,
+                            autoplay: false
+                        });
+                        sound.attachToMesh(experiences[i].model);
+                        experiences[i].model["experienceSound"] = sound;
+                    }
                 }
 
                 // Setup click handling
@@ -67,7 +78,14 @@ ws.onmessage = function(event) {
                     let pick = scene.pick(e.clientX, e.clientY);
                     if (pick.pickedMesh) {
                         if (pick.pickedMesh.material.diffuseTexture) {
-                            playPauseVideo(pick.pickedMesh.material.diffuseTexture.video);
+                            //if (pick.pickedMesh.material.diffuseTexture)
+                            //console.log("Type of texture", pick.pickedMesh.material.diffuseTexture.video);
+                            if (pick.pickedMesh.material.diffuseTexture.video) {
+                                playPauseVideo(pick.pickedMesh.material.diffuseTexture.video);
+                            } else {
+                                console.log("This is audio", pick.pickedMesh);
+                                playPauseAudio(pick.pickedMesh.experienceSound);
+                            }
                         }
                     }
                 })
@@ -101,6 +119,16 @@ function playPauseVideo(video) {
         video.play();
     } else {
         video.pause();
+    }
+}
+
+function playPauseAudio(audio) {
+    console.log("Audio", audio);
+    deb = audio;
+    if (audio.isPlaying) {
+        audio.pause();
+    } else {
+        audio.play();
     }
 }
 

@@ -98,7 +98,7 @@ function parseExperiences() {
         console.debug("Added target", target, "and content", content, "to assets", assets);
 
         //// Create A-Frame Entity for marker
-        let entity = document.createElement("a-entity");
+        // let entity = document.createElement("a-entity");
         // entity.setAttribute("image-target", "name: " + makeGoodName(experience.target));
         // entity.setAttribute("xrextras-play-video", "video: #" + makeGoodName(experience.experience) + "; thumb: #" + makeGoodName(experience.target) + "; canstop: true");
         // entity.setAttribute("geometry", "primitive: plane; height:3; width:3");
