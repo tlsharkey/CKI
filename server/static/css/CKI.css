@@ -91,7 +91,7 @@ body {
     color: white;
     text-align: center;
     vertical-align: center;
-    border-radius: 1em;
+    border-radius: 0.5em;
     font-size: 3em;
     align-content: center;
 }
@@ -128,7 +128,7 @@ body {
     animation-duration: 3s;
     animation-name: expand;
     overflow: scroll;
-    border-radius: 1em;
+    border-radius: 0.5em;
 }
 
 input[type=double], input[type=text], input[type=submit], input[type=file]{
@@ -235,7 +235,50 @@ input[type=double], input[type=text], input[type=submit], input[type=file]{
 
 
 
-/* ***** DEVICES ***** */
-@media only screen and (min-width: 768px) {
-
+/* ***** LOGO ***** */
+#cki-logo img {
+    height: 60vmax;
 }
+
+#cki-logo {
+    position: absolute;
+    left: calc(50vmin);
+    top: calc(60vmax);
+    width: 50vmin;
+    height: 33vmax;
+    overflow: hidden;
+    opacity: 0.25;
+    pointer-events: none;
+}
+
+
+
+/* ***** DEVICES ***** */
+@media (orientation: landscape) {
+    #cki-logo img {
+        display: hidden;
+    }
+
+    #cki-logo {
+        display: none;
+    }
+}
+
+
+/* @media only screen and (min-width: 1080px) {
+    #cki-logo img {
+        visibility: hidden;
+    }
+
+    #cki-logo {
+        position: absolute;
+        left: calc(50vw);
+        top: calc(60vh);
+        width: 50vw;
+        height: 40vh;
+        overflow: hidden;
+        border-style: solid;
+        border-width: 10px;
+        border-radius: 3em;
+    }
+} */
