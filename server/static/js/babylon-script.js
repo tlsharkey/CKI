@@ -112,7 +112,7 @@ ws.onmessage = function(event) {
                 })
                 break;
             default:
-                console.warn("Unknown Message");
+                console.warn("Unknown Message", msg);
         }
     }
 }
@@ -153,4 +153,4 @@ function playPauseAudio(audio) {
     }
 }
 
-setTimeout(loadExperiences, 1000);
+setTimeout(loadExperiences, 1200);

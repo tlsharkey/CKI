@@ -286,7 +286,7 @@ httpsServer.listen(443);
 // =============================================================================
 
 const wss = new WebSocketServer({
-    server: httpsServer,
+    server: httpServer,
     path: "/cnxshun"
 });
 
