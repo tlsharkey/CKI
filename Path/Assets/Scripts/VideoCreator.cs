@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Video;
+using Vuforia;
 
 public class VideoCreator : MonoBehaviour
 {
@@ -18,14 +19,16 @@ public class VideoCreator : MonoBehaviour
 
     public GameObject CreateVideo(Experience experience)
     {
-        //Debug.Log("Got URL for creating Video\n" + experience.videoExperience.name);
-
+        // Instantiate and set values of VideoPlayer
         GameObject video = Instantiate(VideoPrefab, this.transform);
         VideoPlayer player = video.GetComponent<VideoPlayer>();
         player.url = experience.videoExperience;
         player.Pause();
 
+        // Keep track of player
         this.Players.Add(player);
+
+        //TODO: Find the ImageTarget to make the player a child of
 
         return video;
     }

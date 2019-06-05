@@ -1,11 +1,13 @@
 ﻿<Properties StartupConfiguration="{AC47003E-FD2A-10EE-6C66-27BB1A788294}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/VideoCreator.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/MarkerManager.cs">
     <Files>
-      <File FileName="Assets/Scripts/TCPClient.cs" Line="97" Column="31" />
-      <File FileName="Assets/Scripts/Parser.cs" Line="71" Column="41" />
-      <File FileName="Assets/Scripts/VideoCreator.cs" Line="32" Column="28" />
-      <File FileName="Assets/Scripts/AudioCreator.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/MarkerManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/TCPClient.cs" Line="13" Column="19" />
+      <File FileName="Assets/Scripts/Parser.cs" Line="61" Column="11" />
+      <File FileName="Assets/Scripts/VideoCreator.cs" Line="31" Column="67" />
+      <File FileName="Assets/Scripts/AudioCreator.cs" Line="30" Column="72" />
+      <File FileName="Assets/Scripts/MarkerManager.cs" Line="18" Column="6" />
+      <File FileName="Assets/Scripts/SimpleCloudHandler.cs" Line="35" Column="63" />
+      <File FileName="Assets/Scripts/TargetManager.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -13,10 +15,18 @@
           <Node name="Path" expanded="True">
             <Node name="Assets" expanded="True">
               <Node name="Scripts" expanded="True">
-                <Node name="VideoCreator.cs" selected="True" />
+                <Node name="MarkerManager.cs" selected="True" />
+              </Node>
+              <Node name="Vuforia" expanded="True">
+                <Node name="Scripts" expanded="True" />
               </Node>
             </Node>
           </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.UnitTesting.TestPad">
+        <State name="__root__">
+          <Node name="Path" expanded="True" selected="True" />
         </State>
       </Pad>
     </Pads>

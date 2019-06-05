@@ -7,6 +7,8 @@ public class Parser : MonoBehaviour
 
     [SerializeField]
     public string baseUrl = "https://bern.ucsd.edu:8005/";
+    [Tooltip("Automatically determine the base url from the TCP Client")]
+    public bool AutoSetUrl = true;
 
     public static Parser Instance;
 
@@ -14,6 +16,10 @@ public class Parser : MonoBehaviour
     {
         TCPClient.Instance.MessageReceived += Instance_MessageReceived;
         Instance = this;
+        if (AutoSetUrl)
+        {
+            baseUrl = "http://" + TCPClient.Instance.HostIp + ":" + (TCPClient.Instance.HostPort - 2) + "/";
+        }
     }
 
 
@@ -50,6 +56,8 @@ public class Parser : MonoBehaviour
         {
             Experience experience = new Experience(experiences[i]);
         }
+
+        MarkerManager.Instance.InstantiateMarkers();
     }
 
 }
