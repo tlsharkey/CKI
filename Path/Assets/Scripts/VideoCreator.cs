@@ -20,15 +20,14 @@ public class VideoCreator : MonoBehaviour
     public GameObject CreateVideo(Experience experience)
     {
         // Instantiate and set values of VideoPlayer
-        GameObject video = Instantiate(VideoPrefab, this.transform);
+        GameObject video = Instantiate(VideoPrefab, experience.Marker.transform);
+        video.tag = "experience";
         VideoPlayer player = video.GetComponent<VideoPlayer>();
         player.url = experience.videoExperience;
         player.Pause();
 
         // Keep track of player
-        this.Players.Add(player);
-
-        //TODO: Find the ImageTarget to make the player a child of
+        //this.Players.Add(player);
 
         return video;
     }

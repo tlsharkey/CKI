@@ -19,15 +19,14 @@ public class AudioCreator : MonoBehaviour
     public GameObject CreateAudio(Experience experience)
     {
         // Instantiate AudioSource and set values
-        GameObject audio = Instantiate(AudioPrefab, this.transform);
+        GameObject audio = Instantiate(AudioPrefab, experience.Marker.transform);
+        audio.tag = "experience";
         AudioSource player = audio.GetComponent<AudioSource>();
         player.clip = experience.audioExperience;
         player.Pause();
 
         // Keep track of AudioSource
-        this.Players.Add(player);
-
-        //TODO: Find the ImageTarget to make the AudioSource a child of
+        //this.Players.Add(player);
 
         return audio;
     }

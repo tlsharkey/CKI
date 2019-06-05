@@ -68,55 +68,67 @@ public struct Experience
     public string thumbnail;
     public string videoExperience;
     public UnityEngine.AudioClip audioExperience;
+    public string experience;
     public Location location;
 
     public GameObject Player;
+    public GameObject Marker;
 
     private JSONObject constructor;
+    private string experienceType;
 
 
     public Experience(JSONObject experience)
     {
+        // Save JSON data
         this.constructor = experience;
 
+        // Copy over basic data
         this.id = experience["id"].str;
         this.thumbnail = experience["thumbnail"].str;
         this.location = new Location(experience["location"]);
 
-        string expPath = experience["experience"].str;
-        string type = expPath.Split('/')[0];
-        expPath = expPath.Split('/')[1];
+        // Get Experience Data
+        this.experience = experience["experience"].str;
+        this.experienceType = this.experience.Split('/')[0];
 
-        if (type.Equals("audio"))
-        {
-            Debug.Log(string.Format("Using Audio {0}", expPath));
-            this.audioExperience = Resources.Load<UnityEngine.AudioClip>(expPath);
-            this.videoExperience = null;
-            this.Player = null;
-            this.Player = AudioCreator.Instance.CreateAudio(this);
-        } 
-        else if (type.Equals("video"))
-        {
-            Debug.Log(string.Format("Using Video {0}", expPath));
-            this.videoExperience = Parser.Instance.baseUrl + experience["experience"].str;
-            this.audioExperience = null;
-            this.Player = null;
-            this.Player = VideoCreator.Instance.CreateVideo(this);
-        }
-        else
-        {
-            Debug.LogError("Got Unknown type of file\n" + expPath);
-            this.videoExperience = null;
-            this.audioExperience = null;
-            this.Player = null;
-        }
+        // Set video and audio portions to null for now (CreateExperienceAsset will populate)
+        this.audioExperience = null;
+        this.videoExperience = null;
+        this.Player = null;
+        this.Marker = null;
 
+        // Add to manager to keep track of
         MarkerManager.Instance.Experiences.Add(this);
     }
 
     new public string ToString()
     {
         return this.constructor.ToString();
+    }
+
+    public void CreateExperienceAsset()
+    {
+        string expPath = this.experience.Split('/')[1];
+
+        if (experienceType.Equals("audio"))
+        {
+            this.audioExperience = Resources.Load<UnityEngine.AudioClip>(expPath);
+            this.videoExperience = null;
+            this.Player = null;
+            this.Player = AudioCreator.Instance.CreateAudio(this);
+        }
+        else if (experienceType.Equals("video"))
+        {
+            this.videoExperience = Parser.Instance.baseUrl + this.experience;
+            this.audioExperience = null;
+            this.Player = null;
+            this.Player = VideoCreator.Instance.CreateVideo(this);
+        }
+        else
+        {
+            Debug.LogError("Got Unknown type of file\n" + this.experience);
+        }
     }
 }
 
