@@ -1,12 +1,8 @@
 ﻿<Properties StartupConfiguration="{AC47003E-FD2A-10EE-6C66-27BB1A788294}|">
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/TargetManager.cs">
     <Files>
-      <File FileName="Assets/Scripts/TCPClient.cs" Line="13" Column="19" />
-      <File FileName="Assets/Scripts/Parser.cs" Line="60" Column="9" />
-      <File FileName="Assets/Scripts/VideoCreator.cs" Line="31" Column="67" />
-      <File FileName="Assets/Scripts/AudioCreator.cs" Line="30" Column="72" />
-      <File FileName="Assets/Scripts/MarkerManager.cs" Line="22" Column="39" />
-      <File FileName="Assets/Scripts/TargetManager.cs" Line="32" Column="36" />
+      <File FileName="Assets/Scripts/MarkerManager.cs" Line="41" Column="43" />
+      <File FileName="Assets/Scripts/TargetManager.cs" Line="26" Column="37" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">

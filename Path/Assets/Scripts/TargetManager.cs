@@ -31,57 +31,6 @@ public class TargetManager : MonoBehaviour
         //gameObject.name = Target.Name;
     }
 
-    /// <summary>
-    /// Check for touch events and play the experience
-    /// </summary>
-    void Update()
-    {
-        if ((Input.touchCount == 1) && (Input.GetTouch(0).phase == TouchPhase.Began))
-        {
-            Debug.Log("CLICK");
-            Ray raycast = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-            RaycastHit raycastHit;
-            if (Physics.Raycast(raycast, out raycastHit))
-            {
-                Debug.Log("Something Hit");
-                if (raycastHit.collider.CompareTag("experience"))
-                {
-                    AudioSource audio = raycastHit.collider.gameObject.GetComponent<AudioSource>();
-                    UnityEngine.Video.VideoPlayer video = raycastHit.collider.gameObject.GetComponent<UnityEngine.Video.VideoPlayer>();
-
-                    if (audio)
-                    {
-                        Debug.Log("Clicked Audio Experience");
-                        if (audio.isPlaying)
-                        {
-                            audio.Pause();
-                        }
-                        else
-                        {
-                            audio.Play();
-                        }
-                    }
-                    else if (video)
-                    {
-                        Debug.Log("Clicked Video Experience");
-                        if (video.isPlaying)
-                        {
-                            video.Pause();
-                        }
-                        else
-                        {
-                            video.Play();
-                        }
-                    }
-                    else
-                    {
-                        Debug.LogError("Clicked Object tagged as Experience, but didn't have an AudioSource or VideoPlayer.");
-                    }
-                }
-            }
-        }
-    }
-
 
     public void CheckExperiences()
     {
