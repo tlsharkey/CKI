@@ -103,8 +103,11 @@ net.createServer(function(sock) {
 
     /* Handle Messages */
     sock.on("data", function(data) {
+        tcpBuffer = Buffer.concat([tcpBuffer, new Buffer.from(data)]);
+
         while (tcpBuffer.length != 0) {
             let msg = getJsonFromBuffer();
+            console.log("Message from buffer", msg);
 
             if ("type" in msg) {
                 switch (msg.type) {
@@ -116,6 +119,11 @@ net.createServer(function(sock) {
                             tcpDevices.push(sock);
                             verified = true;
                             console.log("Verified Connection with", sock.remoteAddress, ":", sock.remotePort);
+
+                            tcpSend(sock, {
+                                type: "experiences",
+                                experiences: assets
+                            });
                         } else {
                             console.warn("Got invalid verification message:", JSON.stringify(msg), "closing connection");
                             sock.destroy();
@@ -127,7 +135,10 @@ net.createServer(function(sock) {
                          * and determines which experiences should be given to the device
                          * responds with a list of experience identifiers
                          * for the device to download */
-                        console.log("Not Implemented Yet");
+                        tcpSend(sock, {
+                            type: "experiences",
+                            experiences: assets
+                        });
                         break;
                     default:
                         /* Unknown Type */
@@ -144,7 +155,7 @@ net.createServer(function(sock) {
     sock.on("close", function(data) {
         console.log("TCP Connection from", sock.remoteAddress + ":" + sock.remotePort, "closed by remote");
         if (tcpDevices.indexOf(sock) !== -1) {
-            tcpClients.splice(tcpClients.indexOf(sock), 1);
+            tcpDevices.splice(tcpDevices.indexOf(sock), 1);
         }
     });
 
@@ -153,12 +164,12 @@ net.createServer(function(sock) {
         if (err.code === "ECONNRESET") {
             console.log("Peer forcibly closed tcp connection", sock.remoteAddress);
             if (tcpDevices.indexOf(sock) !== -1) {
-                tcpClients.splice(tcpClients.indexOf(sock), 1);
+                tcpDevices.splice(tcpDevices.indexOf(sock), 1);
             }
         } else {
             console.error("TCP Error. Closing Connection to peer", sock.remoteAddress);
             if (tcpDevices.indexOf(sock) !== -1) {
-                tcpClients.splice(tcpClients.indexOf(sock), 1);
+                tcpDevices.splice(tcpDevices.indexOf(sock), 1);
             }
         }
     })
@@ -205,12 +216,12 @@ app.get("/experience", function(req, res) {
 app.get("/bab", function(req, res) {
     res.sendFile(__dirname + "/static/babylontesting.html");
     console.log("Server Bab");
-})
+});
 
 app.get("/3", function(req, res) {
     res.sendFile(__dirname + "/static/three_eg.html");
     console.log("Server threejs example");
-})
+});
 
 var lastUploadDetails = null; // TODO: create identifiers to avoid concurrent uploads interfering with eachother
 
@@ -459,4 +470,41 @@ function sendUploadOptions(ws) {
         }));
 
     });
+}
+
+function tcpSend(client, msg) {
+    if (!client) {
+        // purge list of holos of the undefined one.
+        if (tcpClients.indexOf(undefined) !== -1) {
+            tcpClients.splice(tcpClients.indexOf(undefined), 1);
+            console.log("Removed undefined client");
+        }
+        console.error("sendTo function was passed an undefined client to send to");
+        return;
+    }
+
+    // Convert to string if needed
+    if (typeof(msg) !== "string") {
+        msg = JSON.stringify(msg);
+    }
+
+
+    var msgLength = Buffer.byteLength(msg, 'utf-8');
+    var byteLength = new Buffer.alloc(4);
+    byteLength.writeUInt32LE(msgLength, 0);
+
+    //winston.info("Sending Message with " + msgLength.toString() + " bytes");
+
+    // Create buffer from string
+    var msgBuffer = new Buffer.from(msg, 'utf8');
+    msgBuffer = Buffer.concat([byteLength, msgBuffer]);
+    //console.log("\tmsgBuffer", msgBuffer, "\n\tbyteLength", byteLength);
+    try {
+        //tcpClients[client].write(msgLength);
+        //winston.info("sending `" + msgBuffer.toString() + "`\n\tfor `" + msg + "`");
+        client.write(msgBuffer);
+    } catch (error) {
+        winston.error("error sending message to holo " + client + " error message: " + error);
+        // TODO: check if need to end connection
+    }
 }

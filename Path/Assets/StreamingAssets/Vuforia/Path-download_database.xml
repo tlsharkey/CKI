@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
+  <Tracking>
+    <ImageTarget name="fab-fox" size="0.060000 0.067920" />
+    <ImageTarget name="embarassed-fox" size="0.050000 0.048921" />
+    <ImageTarget name="magic-flower" size="0.045000 0.036372" />
+    <ImageTarget name="magic-heart" size="0.045000 0.040066" />
+  </Tracking>
+</QCARConfig>
