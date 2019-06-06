@@ -25,10 +25,10 @@ const TCP_PORT = _config.tcpServer.port;
 const ADDRESS = _config.httpServer.address;
 const EXPERIENCES_PATH = "./uploaded_experiences/";
 const PAGE = "./static/";
-const httpsCerts = {
+/*const httpsCerts = {
     key: fs.readFileSync("config/server.key"),
     cert: fs.readFileSync("config/server.crt")
-};
+};*/
 
 var assets = []
 getExperiences();
@@ -85,84 +85,84 @@ function getJsonFromBuffer() {
  * There may also be some communication to show where devices are located
  * when viewing from the map
  */
-net.createServer(function(sock) {
-    console.log("TCP Connection established with", sock.remoteAddress, ":", sock.remotePort);
-
-    /* Prevent Bots from connecting:
-     * close connections to devices which haven't sent a valid 'verification' message
-     * within 2 seconds of connecting.
-     */
-    let verified = false;
-    setTimeout(function() {
-        if (!verified) {
-            console.warn("TCP Connection aborted because device didn't verify itself", sock.remoteAddress);
-            sock.destroy();
-        }
-    }, 2000);
-
-
-    /* Handle Messages */
-    sock.on("data", function(data) {
-        while (tcpBuffer.length != 0) {
-            let msg = getJsonFromBuffer();
-
-            if ("type" in msg) {
-                switch (msg.type) {
-                    case "verification":
-                        /* Checks for a verification code from the device.
-                         * if code is 'Kitty Kitty', accepts the connection
-                         * otherwise rejects it.*/
-                        if ("code" in msg && msg.code === "Kitty Kitty") {
-                            tcpDevices.push(sock);
-                            verified = true;
-                            console.log("Verified Connection with", sock.remoteAddress, ":", sock.remotePort);
-                        } else {
-                            console.warn("Got invalid verification message:", JSON.stringify(msg), "closing connection");
-                            sock.destroy();
-                        }
-                        break;
-                    case "getExperiences":
-                        /* A request from a device to get the experience information
-                         * Looks at the passed GPS coordinates,
-                         * and determines which experiences should be given to the device
-                         * responds with a list of experience identifiers
-                         * for the device to download */
-                        console.log("Not Implemented Yet");
-                        break;
-                    default:
-                        /* Unknown Type */
-                        console.error("Got Unknown TCP message type:", JSON.stringify(msg));
-                        break;
-                }
-            } else {
-                console.error("Got Message without a type", JSON.stringify(msg, null, 4));
-            }
-        }
-    });
-
-    /* Handle Close */
-    sock.on("close", function(data) {
-        console.log("TCP Connection from", sock.remoteAddress + ":" + sock.remotePort, "closed by remote");
-        if (tcpDevices.indexOf(sock) !== -1) {
-            tcpClients.splice(tcpClients.indexOf(sock), 1);
-        }
-    });
-
-    /* Handle Error */
-    sock.on("error", function(err) {
-        if (err.code === "ECONNRESET") {
-            console.log("Peer forcibly closed tcp connection", sock.remoteAddress);
-            if (tcpDevices.indexOf(sock) !== -1) {
-                tcpClients.splice(tcpClients.indexOf(sock), 1);
-            }
-        } else {
-            console.error("TCP Error. Closing Connection to peer", sock.remoteAddress);
-            if (tcpDevices.indexOf(sock) !== -1) {
-                tcpClients.splice(tcpClients.indexOf(sock), 1);
-            }
-        }
-    })
-}).listen(TCP_PORT, ADDRESS);
+//net.createServer(function(sock) {
+//    console.log("TCP Connection established with", sock.remoteAddress, ":", sock.remotePort);
+//
+//    /* Prevent Bots from connecting:
+//     * close connections to devices which haven't sent a valid 'verification' message
+//     * within 2 seconds of connecting.
+//     */
+//    let verified = false;
+//    setTimeout(function() {
+//        if (!verified) {
+//            console.warn("TCP Connection aborted because device didn't verify itself", sock.remoteAddress);
+//            sock.destroy();
+//        }
+//    }, 2000);
+//
+//
+//    /* Handle Messages */
+//    sock.on("data", function(data) {
+//        while (tcpBuffer.length != 0) {
+//            let msg = getJsonFromBuffer();
+//
+//            if ("type" in msg) {
+//                switch (msg.type) {
+//                    case "verification":
+//                        /* Checks for a verification code from the device.
+//                         * if code is 'Kitty Kitty', accepts the connection
+//                         * otherwise rejects it.*/
+//                        if ("code" in msg && msg.code === "Kitty Kitty") {
+//                            tcpDevices.push(sock);
+//                            verified = true;
+//                            console.log("Verified Connection with", sock.remoteAddress, ":", sock.remotePort);
+//                        } else {
+//                            console.warn("Got invalid verification message:", JSON.stringify(msg), "closing connection");
+//                            sock.destroy();
+//                        }
+//                        break;
+//                    case "getExperiences":
+//                        /* A request from a device to get the experience information
+//                         * Looks at the passed GPS coordinates,
+//                         * and determines which experiences should be given to the device
+//                         * responds with a list of experience identifiers
+//                         * for the device to download */
+//                        console.log("Not Implemented Yet");
+//                        break;
+//                    default:
+//                        /* Unknown Type */
+//                        console.error("Got Unknown TCP message type:", JSON.stringify(msg));
+//                        break;
+//                }
+//            } else {
+//                console.error("Got Message without a type", JSON.stringify(msg, null, 4));
+//            }
+//        }
+//    });
+//
+//    /* Handle Close */
+//    sock.on("close", function(data) {
+//        console.log("TCP Connection from", sock.remoteAddress + ":" + sock.remotePort, "closed by remote");
+//        if (tcpDevices.indexOf(sock) !== -1) {
+//            tcpClients.splice(tcpClients.indexOf(sock), 1);
+//        }
+//    });
+//
+//    /* Handle Error */
+//    sock.on("error", function(err) {
+//        if (err.code === "ECONNRESET") {
+//            console.log("Peer forcibly closed tcp connection", sock.remoteAddress);
+//            if (tcpDevices.indexOf(sock) !== -1) {
+//                tcpClients.splice(tcpClients.indexOf(sock), 1);
+//            }
+//        } else {
+//            console.error("TCP Error. Closing Connection to peer", sock.remoteAddress);
+//            if (tcpDevices.indexOf(sock) !== -1) {
+//                tcpClients.splice(tcpClients.indexOf(sock), 1);
+//            }
+//        }
+//    })
+//}).listen(TCP_PORT, ADDRESS);
 
 
 
@@ -275,10 +275,16 @@ app.get("/experience/:id(\\d+)", function(req, res, next) {
     res.end();
 });
 
-const httpServer = app.listen(HTTP_PORT, ADDRESS, () => console.log("HTTP Server Hosting On", "https://" + ADDRESS));
-http.createServer(app).listen(80);
-var httpsServer = https.createServer(httpsCerts, app)
-httpsServer.listen(443);
+const httpServer = app.listen(HTTP_PORT, ADDRESS, function(err) {
+    if (err) {
+        console.log("Failed to start httpServer", err);
+    } else {
+        console.log("HTTP Server Hosting On", "https://" + ADDRESS);
+    }
+});
+//http.createServer(app).listen(80);
+//var httpsServer = https.createServer(httpsCerts, app)
+//httpsServer.listen(443);
 
 
 // =============================================================================
@@ -287,7 +293,7 @@ httpsServer.listen(443);
 
 const wss = new WebSocketServer({
     server: httpServer,
-    path: "/cnxshun"
+    //path: "/cnxshun"
 });
 
 wss.on("connection", function(ws, req) {

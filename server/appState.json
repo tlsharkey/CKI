@@ -25,5 +25,14 @@
             "longitude": -117.16448380000001
         },
         "experience": "audio/20190529_212331.wav"
+    },
+    {
+        "id": "broccoli",
+        "thumbnail": "broccoli.png",
+        "location": {
+            "latitude": 32.751720002529495,
+            "longitude": -117.1646761427356
+        },
+        "experience": "video/video81depth.mp4"
     }
 ]

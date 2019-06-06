@@ -1,6 +1,6 @@
 // gets proper host
 var host = location.origin.replace(/^http/, 'ws');
-host += "/cnxshun";
+//host += "/cnxshun";
 var ws = new WebSocket(host);
 var wsConnected = false;
 
