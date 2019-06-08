@@ -12,6 +12,8 @@ const fs = require("fs");
 const net = require("net");
 const _config = require("./config/config");
 const apiKey = require("./static/assets/googleMapsApiKey");
+const ffmpeg = require("ffmpeg");
+const uniqid = require("uniqid");
 
 const app = express();
 
@@ -85,86 +87,132 @@ function getJsonFromBuffer() {
  * There may also be some communication to show where devices are located
  * when viewing from the map
  */
-//net.createServer(function(sock) {
-//    console.log("TCP Connection established with", sock.remoteAddress, ":", sock.remotePort);
-//
-//    /* Prevent Bots from connecting:
-//     * close connections to devices which haven't sent a valid 'verification' message
-//     * within 2 seconds of connecting.
-//     */
-//    let verified = false;
-//    setTimeout(function() {
-//        if (!verified) {
-//            console.warn("TCP Connection aborted because device didn't verify itself", sock.remoteAddress);
-//            sock.destroy();
-//        }
-//    }, 2000);
-//
-//
-//    /* Handle Messages */
-//    sock.on("data", function(data) {
-//        while (tcpBuffer.length != 0) {
-//            let msg = getJsonFromBuffer();
-//
-//            if ("type" in msg) {
-//                switch (msg.type) {
-//                    case "verification":
-//                        /* Checks for a verification code from the device.
-//                         * if code is 'Kitty Kitty', accepts the connection
-//                         * otherwise rejects it.*/
-//                        if ("code" in msg && msg.code === "Kitty Kitty") {
-//                            tcpDevices.push(sock);
-//                            verified = true;
-//                            console.log("Verified Connection with", sock.remoteAddress, ":", sock.remotePort);
-//                        } else {
-//                            console.warn("Got invalid verification message:", JSON.stringify(msg), "closing connection");
-//                            sock.destroy();
-//                        }
-//                        break;
-//                    case "getExperiences":
-//                        /* A request from a device to get the experience information
-//                         * Looks at the passed GPS coordinates,
-//                         * and determines which experiences should be given to the device
-//                         * responds with a list of experience identifiers
-//                         * for the device to download */
-//                        console.log("Not Implemented Yet");
-//                        break;
-//                    default:
-//                        /* Unknown Type */
-//                        console.error("Got Unknown TCP message type:", JSON.stringify(msg));
-//                        break;
-//                }
-//            } else {
-//                console.error("Got Message without a type", JSON.stringify(msg, null, 4));
-//            }
-//        }
-//    });
-//
-//    /* Handle Close */
-//    sock.on("close", function(data) {
-//        console.log("TCP Connection from", sock.remoteAddress + ":" + sock.remotePort, "closed by remote");
-//        if (tcpDevices.indexOf(sock) !== -1) {
-//            tcpClients.splice(tcpClients.indexOf(sock), 1);
-//        }
-//    });
-//
-//    /* Handle Error */
-//    sock.on("error", function(err) {
-//        if (err.code === "ECONNRESET") {
-//            console.log("Peer forcibly closed tcp connection", sock.remoteAddress);
-//            if (tcpDevices.indexOf(sock) !== -1) {
-//                tcpClients.splice(tcpClients.indexOf(sock), 1);
-//            }
-//        } else {
-//            console.error("TCP Error. Closing Connection to peer", sock.remoteAddress);
-//            if (tcpDevices.indexOf(sock) !== -1) {
-//                tcpClients.splice(tcpClients.indexOf(sock), 1);
-//            }
-//        }
-//    })
-//}).listen(TCP_PORT, ADDRESS);
+net.createServer(function(sock) {
+    console.log("TCP Connection established with", sock.remoteAddress, ":", sock.remotePort);
+
+    /* Prevent Bots from connecting:
+     * close connections to devices which haven't sent a valid 'verification' message
+     * within 2 seconds of connecting.
+     */
+    let verified = false;
+    setTimeout(function() {
+        if (!verified) {
+            console.warn("TCP Connection aborted because device didn't verify itself", sock.remoteAddress);
+            sock.destroy();
+        }
+    }, 2000);
 
 
+    /* Handle Messages */
+    sock.on("data", function(data) {
+        tcpBuffer = Buffer.concat([tcpBuffer, new Buffer.from(data)]);
+
+        while (tcpBuffer.length != 0) {
+            let msg = getJsonFromBuffer();
+            //console.log("Message from buffer", msg);
+
+            if ("type" in msg) {
+                switch (msg.type) {
+                    case "verification":
+                        /* Checks for a verification code from the device.
+                         * if code is 'Kitty Kitty', accepts the connection
+                         * otherwise rejects it.*/
+                        if ("code" in msg && msg.code === "Kitty Kitty") {
+                            tcpDevices.push(sock);
+                            verified = true;
+                            console.log("Verified Connection with", sock.remoteAddress, ":", sock.remotePort);
+
+                            tcpSend(sock, {
+                                type: "verificationConfirmation"
+                            });
+                        } else {
+                            console.warn("Got invalid verification message:", JSON.stringify(msg), "closing connection");
+                            sock.destroy();
+                        }
+                        break;
+                    case "getExperiences":
+                        /* A request from a device to get the experience information
+                         * Looks at the passed GPS coordinates,
+                         * and determines which experiences should be given to the device
+                         * responds with a list of experience identifiers
+                         * for the device to download */
+                        tcpSend(sock, {
+                            type: "experiences",
+                            experiences: assets
+                        });
+                        break;
+                    case "getOptions":
+                        sendUploadOptionsTcp(sock);
+                        break;
+                    case "experienceUpload":
+                        console.log("==== UPLOADING EXPERIENCES ====");
+                        handleTcpUpload(msg);
+                        break;
+                    case "log":
+                        console.log(">>>", msg.log);
+                        break;
+                    default:
+                        /* Unknown Type */
+                        let printMsg = JSON.stringify(msg);
+                        if (printMsg.length > 200) {
+                            printMsg = printMsg.slice(0, 200);
+                        }
+                        console.error("Got Unknown TCP message type:", printMsg);
+                        break;
+                }
+            } else {
+                console.error("Got Message without a type", JSON.stringify(msg, null, 4));
+            }
+        }
+    });
+
+    /* Handle Close */
+    sock.on("close", function(data) {
+        console.log("TCP Connection from", sock.remoteAddress + ":" + sock.remotePort, "closed by remote");
+        if (tcpDevices.indexOf(sock) !== -1) {
+            tcpDevices.splice(tcpDevices.indexOf(sock), 1);
+        }
+    });
+
+    /* Handle Error */
+    sock.on("error", function(err) {
+        if (err.code === "ECONNRESET") {
+            console.log("Peer forcibly closed tcp connection", sock.remoteAddress);
+            if (tcpDevices.indexOf(sock) !== -1) {
+                tcpDevices.splice(tcpDevices.indexOf(sock), 1);
+            }
+        } else {
+            console.error("TCP Error. Closing Connection to peer", sock.remoteAddress);
+            if (tcpDevices.indexOf(sock) !== -1) {
+                tcpDevices.splice(tcpDevices.indexOf(sock), 1);
+            }
+        }
+    })
+}).listen(TCP_PORT, ADDRESS);
+
+function handleTcpUpload(msgObj) {
+    let location = msgObj.location;
+    let id = msgObj.id;
+    let thumbnail = msgObj.thumbnail;
+    let video = msgObj.experience.data;
+    let filename = msgObj.experience.filename;
+
+    // Save Video
+    fs.writeFile(__dirname + "/static/assets/video/" + filename, video, function(err) {
+        if (err) {
+            return console.error("Failed to write experience " + err);
+        }
+        console.log("Added Video", filename);
+    });
+
+    // Save Experience Data
+    let dataToAdd = {
+        id: id,
+        thumbnail: thumbnail,
+        experience: "video/" + filename,
+        location: location
+    }
+}
 
 // =============================================================================
 // HTTP Server
@@ -186,6 +234,11 @@ app.get("/", function(req, res) {
     console.log("Served Root");
 });
 
+app.get("/privacy-policy", function(req, res) {
+    res.sendFile(__dirname + "/static/privacy_policy.html");
+    console.log("Served Privacy Policy");
+});
+
 app.get("/map", function(req, res) {
     res.sendFile(__dirname + "/static/map.html");
     console.log("Served Map");
@@ -205,12 +258,74 @@ app.get("/experience", function(req, res) {
 app.get("/bab", function(req, res) {
     res.sendFile(__dirname + "/static/babylontesting.html");
     console.log("Server Bab");
-})
+});
 
 app.get("/3", function(req, res) {
     res.sendFile(__dirname + "/static/three_eg.html");
     console.log("Server threejs example");
-})
+});
+
+app.post("/uploadDeviceExperienceData", function(req, res) {
+    console.log("Uploading ExperienceData from Device...");
+    let form = new formidable.IncomingForm();
+    form.parse(req, function(err, fields, files) {
+        if (err) {
+            return console.error("Problem uploading experience", err);
+        }
+        console.log("Got data upload data", fields, files);
+        lastUploadDetails = fields;
+    });
+});
+
+app.post("/uploadDeviceExperienceVideo", function(req, res) {
+    req.setTimeout(1000000);
+    console.log("Uploading Experience from Device...");
+    let details = lastUploadDetails;
+
+    let form = new formidable.IncomingForm();
+    form.parse(req, function(err, fields, files) {
+        if (err) {
+            return console.error("Problem uploading experience video", err);
+        }
+        console.log("Got video data");
+
+        let filename = uniqid("UPLOAD-") + ".mp4";
+        let fileLoc = __dirname + "/static/assets/video/" + filename;
+        fs.rename(files.file.path, fileLoc, function (err) {
+            if (err) {
+                console.error("Failed to Move File");
+                res.status(500).send(err);
+            }
+
+            // Use FFMPEG to convert
+            //new ffmpeg(fileLoc, function(err, video) {
+            //    if (err) {
+            //        return console.error("Failed to create ffmpeg object", err);
+            //    }
+            //
+            //    console.log("Created ffmpeg object");
+            //
+            //    video.setVideoFormat("mp4");
+            //    video.setVideoCodec("mpeg4");
+            //    video.setFrameRate(24);
+            //    
+            //    let newLoc = fileLoc.replace("UPLOAD", "FFMPEG");
+            //    video.save(newLoc, function(err, file) {
+            //        if (err) {
+            //            return console.error("Failed to save ffmpeg version");
+            //        }
+            //        console.log("Saved ffmpeg version", file);
+            //    });
+            //});
+
+
+            
+            addExperience(details, "video/" + filename);
+            res.status(200).send("Thank You");
+        });
+    });
+});
+
 
 var lastUploadDetails = null; // TODO: create identifiers to avoid concurrent uploads interfering with eachother
 
@@ -259,6 +374,68 @@ app.post("/uploadExperience", function(req, res) {
 
         experience.mv(__dirname + "/static/assets/" + folder + "/" + experience.name, function(err) {
             if (err) return res.status(500).send(err);
+
+            // Convert and compress file
+            if (folder === "audio") {
+                new ffmpeg(__dirname + "/static/assets/" + folder + "/" + experience.name, function(err, audio) {
+                    if (err) {
+                        console.log("Failed to convert Audio", err);
+                    } else {
+                        console.log("Successfully created ffmpeg audio");
+                        // metadata
+                        console.log(audio.metadata);
+                        // FFmpeg configuration
+                        console.log(audio.info_configuration);
+
+                        // Convert
+                        audio.setAudioFormat("mp3");
+                        audio.setAudioCodec("");
+
+                        // Save
+                        let oldType = experience.name.split('.');
+                        oldType = oldType[oldType.length - 1];
+                        console.log("Converted from", oldType, "to mp3");
+                        let newName = experience.name.replace(oldType, "mp3");
+                        audio.save(__dirname + "/static/assets/" + folder + "/" + newName, function(error, file) {
+                            if (error) {
+                                console.error("Failed to save audio", error);
+                                return;
+                            }
+                            console.log('Saved new audio file as:', file);
+                        });
+                    }
+                });
+            } else if (folder === "video") {
+                new ffmpeg(__dirname + "/static/assets/" + folder + "/" + experience.name, function(err, video) {
+                    if (err) {
+                        console.log("Failed to create ffmpeg video", err);
+                    } else {
+                        console.log("Successfully created ffmpeg video");
+                        // metadata
+                        console.log(video.metadata);
+                        // FFmpeg configuration
+                        console.log(video.info_configuration);
+
+                        // Convert
+                        video.setVideoFormat("mp4");
+                        video.setVideoCodec("H.264");
+                        video.setFrameRate(24);
+
+                        // Save
+                        let oldType = experience.name.split('.');
+                        oldType = oldType[oldType.length - 1];
+                        console.log("Converted from", oldType, "to mp4");
+                        let newName = experience.name.replace(oldType, "mp4");
+                        video.save(__dirname + "/static/assets/" + folder + "/" + newName, function(error, file) {
+                            if (error) {
+                                console.error("Failed to save converted video", error);
+                                return;
+                            }
+                            console.log("Saved converted video as:", file);
+                        });
+                    }
+                });
+            }
 
             addExperience(details, folder + "/" + experience.name);
             res.status(200).send("Thank You");
@@ -375,10 +552,33 @@ function disconnectPendingRequests(sock, timeout) {
 }
 
 function addExperience(target, asset) {
+    console.log("Adding Experience", target, asset);
+    let id;
+    let thumb;
+    let loc;
+    if (target.sticker) {
+        id = target.sticker.replace(".png", "");
+        thumb = target.sticker;
+        loc = target.location;
+    }
+    else if (target.thumbnail) {
+        id = target.id;
+        thumb = target.thumbnail;
+        loc = {
+            latitude: target.latitude,
+            longitude: target.longitude
+        }
+    }
+    else {
+        console.error("Got Weird Experience Data", target);
+        return;
+    }
+
+
     let experience = {
-        id: target.sticker.replace(".png", ""),
-        thumbnail: target.sticker,
-        location: target.location,
+        id: id,
+        thumbnail: thumb,
+        location: loc,
         experience: asset
     }
 
@@ -465,4 +665,60 @@ function sendUploadOptions(ws) {
         }));
 
     });
+}
+
+function sendUploadOptionsTcp(sock) {
+    let folder = __dirname + "/static/assets/targets";
+
+    fs.readdir(folder, function(err, items) {
+        if (err) {
+            console.error(err);
+        }
+        for (let i = items.length - 1; i >= 0; i--) {
+            if (items[i].startsWith('.')) {
+                items.splice(i, 1);
+            } else if (findInExperiences(items[i]) != -1) {
+                console.log(items[i], "found in appState.json. splicing");
+                items.splice(i, 1);
+            }
+        }
+        console.log("Targets", items);
+
+        tcpSend(sock, {
+            type: "uploadOptions",
+            options: items
+        });
+    });
+}
+
+function tcpSend(client, msg) {
+    if (!client) {
+        // purge list of holos of the undefined one.
+        if (tcpClients.indexOf(undefined) !== -1) {
+            tcpClients.splice(tcpClients.indexOf(undefined), 1);
+            console.log("Removed undefined client");
+        }
+        console.error("sendTo function was passed an undefined client to send to");
+        return;
+    }
+
+    // Convert to string if needed
+    if (typeof(msg) !== "string") {
+        msg = JSON.stringify(msg);
+    }
+
+
+    var msgLength = Buffer.byteLength(msg, 'utf-8');
+    var byteLength = new Buffer.alloc(4);
+    byteLength.writeUInt32LE(msgLength, 0);
+
+    // Create buffer from string
+    var msgBuffer = new Buffer.from(msg, 'utf8');
+    msgBuffer = Buffer.concat([byteLength, msgBuffer]);
+    
+    try {
+        client.write(msgBuffer);
+    } catch (error) {
+        console.log("error sending message to device", client, "error message:", error);
+    }
 }

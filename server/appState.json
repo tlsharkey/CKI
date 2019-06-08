@@ -1,7 +1,7 @@
 [
     {
-        "id": "pathfrog",
-        "thumbnail": "pathfrog.png",
+        "id": "magic-flower",
+        "thumbnail": "magic-flower.png",
         "experience": "video/signs.mp4",
         "location": {
             "latitude": 32.877724,
@@ -24,7 +24,7 @@
             "latitude": 32.7517151,
             "longitude": -117.16448380000001
         },
-        "experience": "audio/20190529_212331.wav"
+        "experience": "video/pf3.mp4"
     },
     {
         "id": "broccoli",
@@ -33,6 +33,24 @@
             "latitude": 32.751720002529495,
             "longitude": -117.1646761427356
         },
-        "experience": "video/video81depth.mp4"
+        "experience": "video/Path-Intro-Video.mp4"
+    },
+    {
+        "id": "2pents",
+        "thumbnail": "2pents.png",
+        "location": {
+            "latitude": 32.75169,
+            "longitude": -117.1645
+        },
+        "experience": "video/UPLOAD-chl22gn2rjwndbnag.mp4"
+    },
+    {
+        "id": "2cups",
+        "thumbnail": "2cups.png",
+        "location": {
+            "latitude": 32.75172,
+            "longitude": -117.1645
+        },
+        "experience": "video/UPLOAD-chl22gn4ijwndmpa7.mp4"
     }
 ]
